@@ -33,12 +33,12 @@ spring:
     name: cityinformation
 
   profiles:
-    active: ${PROFILE:jar}
+    active: ${PROFILE:default}
 
   
 ---
 spring:
-  profiles: jar
+  profiles: default
 
 server:
   port: ${SERVER.PORT:1402}
