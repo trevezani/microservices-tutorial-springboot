@@ -24,7 +24,7 @@ import br.com.trevezani.commons.exception.NotFoundException;
 import br.com.trevezani.zipcode.dao.ZipCodeDao;
 import br.com.trevezani.zipcode.service.ZipCodeService;
 
-@ActiveProfiles("default")
+@ActiveProfiles("test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class ZipCodeMockTest {
 	@InjectMocks
