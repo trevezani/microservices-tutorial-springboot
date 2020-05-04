@@ -41,7 +41,7 @@ class ZipCodeMockTest {
 		when(zipCodeDao.findByZip("111111")).thenReturn(result);
 	}
 
-	@DisplayName("Test Mock ::  findByZip with Valid zip")
+	@DisplayName("Test Mock :: findByZip with Valid zip")
 	@Test
 	void test1() throws ValidationException, BusinessException, NotFoundException {
 		assertTrue(zipCodeService.findByZip("111111").containsKey("test"));
