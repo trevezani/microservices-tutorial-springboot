@@ -22,7 +22,7 @@ public class ZipCodeController {
 	@Autowired
 	private ReturnMessage returnMessage;
 
-    @GetMapping(path = "/zip/{zip}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(path = "/zipcode/{zip}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> zip(@PathVariable String zip) {
 		try {
 			return ResponseEntity.ok().body(zipCodeService.findByZip(zip));

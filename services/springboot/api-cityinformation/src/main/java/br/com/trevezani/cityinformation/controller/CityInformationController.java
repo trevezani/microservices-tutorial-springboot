@@ -19,7 +19,7 @@ public class CityInformationController {
 	@Autowired
 	private CityInformationService cityInformationService; 
 	
-    @GetMapping(path = "/zip/{zip}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(path = "/cityinformation/{zip}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> zip(@PathVariable String zip) {
 		try {
 			return ResponseEntity.ok().body(cityInformationService.findByZip(zip));
