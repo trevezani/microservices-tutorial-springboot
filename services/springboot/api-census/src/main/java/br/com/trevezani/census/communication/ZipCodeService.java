@@ -35,7 +35,7 @@ public class ZipCodeService {
 	public Map<String, String> call(String zip) throws Exception {
 		Map<String, String> info = new HashMap<>();
 
-		final String url = remoteURL.concat("/zip/").concat(zip);
+		final String url = remoteURL.concat("/zipcode/").concat(zip);
 
 		httpCommunication.callService(correlationSession.getCorrelationId(), SERVICE, url).ifPresent(m -> {
 			info.put("type", m.get("type"));
