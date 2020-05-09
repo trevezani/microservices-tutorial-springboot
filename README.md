@@ -4,7 +4,7 @@ This is an tutorial project to show many approach used with microservices.
 
 **Table of Contents**
 * [About the tutorial](#about-the-tutorial)
-* [Building, Testing and Running the springboot application](#building-and-running-the-springboot-application)
+* [Building, Testing and Running the springboot application](#building-testing-and-running-the-springboot-application)
 * [Contacts](#contacts)
 
 ***
