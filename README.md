@@ -55,4 +55,4 @@ curl http://localhost:1301/info/zip/37188
 ## Contacts
 For any question or feedback (really appreciated!) feel free to contact me:
 * Email: trevezani _(at)_ gmail.com
-* Linkedin: [Alberto Trevezani](www.linkedin.com/in/albertotrevezani)
+* Linkedin: [Alberto Trevezani](https://www.linkedin.com/in/albertotrevezani)
