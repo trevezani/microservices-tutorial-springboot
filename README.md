@@ -1,6 +1,6 @@
 # Microservices Tutorial (Under Construction)
 
-This is an tutorial project to show many approach used with microservices.
+This is a tutorial project to show many approach used with microservices.
 
 **Table of Contents**
 * [About the tutorial](#about-the-tutorial)
