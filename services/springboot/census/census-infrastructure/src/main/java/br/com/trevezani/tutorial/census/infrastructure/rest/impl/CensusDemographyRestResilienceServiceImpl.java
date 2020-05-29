@@ -9,12 +9,12 @@ import br.com.trevezani.tutorial.internal.communication.exception.BusinessExcept
 import br.com.trevezani.tutorial.internal.communication.exception.InternalErrorException;
 import br.com.trevezani.tutorial.internal.communication.exception.ServiceNotAvailableException;
 import br.com.trevezani.tutorial.internal.delivery.rest.DemographyRest;
+import io.github.resilience4j.circuitbreaker.CallNotPermittedException;
 import io.github.resilience4j.circuitbreaker.CircuitBreaker;
 import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
 import io.github.resilience4j.retry.Retry;
 import io.github.resilience4j.retry.RetryRegistry;
 import io.vavr.CheckedFunction0;
-import io.vavr.control.Try;
 
 public class CensusDemographyRestResilienceServiceImpl implements CensusDemographyRestService {
 	Logger log = LoggerFactory.getLogger(this.getClass());
@@ -46,9 +46,16 @@ public class CensusDemographyRestResilienceServiceImpl implements CensusDemograp
 		CheckedFunction0<DemographyRest> supplier = CircuitBreaker.decorateCheckedSupplier(circuitBreaker, () -> this.internal(correlationId, url));
 		supplier = Retry.decorateCheckedSupplier(retry, supplier);
 		
-		DemographyRest result = Try.of(supplier).recover(throwable -> fallback(correlationId, throwable.getMessage())).get();
-
-		return result;
+		try {
+			return supplier.apply();
+			
+		} catch (ServiceNotAvailableException | CallNotPermittedException e) {
+			return fallback(correlationId, e.getMessage());
+		} catch (BusinessException e) {
+			throw new BusinessException(e.getMessage());
+		} catch (Throwable e) {
+			throw new InternalErrorException(e.getMessage());
+		}
 	}
 
 	private DemographyRest internal(final String correlationId, final String url) throws ServiceNotAvailableException, InternalErrorException, BusinessException {
