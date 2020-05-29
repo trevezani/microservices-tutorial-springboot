@@ -43,25 +43,4 @@ spring:
 server:
   port: ${SERVER.PORT:1402}
     
-  
----
-spring:
-  profiles: eureka
-
-server:
-  port: ${SERVER.PORT:1402}
-        
-eureka:
-  client:
-    fetchRegistry: true
-    serviceUrl:
-      defaultZone: http://${EUREKA.USER:admin}:${EUREKA.PASS:admin}@${EUREKA.URI1:localhost:8761}/eureka,http://${EUREKA.USER:admin}:${EUREKA.PASS:admin}@${EUREKA.URI2:localhost:8761}/eureka
-
-    healthcheck:
-      enabled: true
-
-  instance:
-    leaseRenewalIntervalInSeconds: 10
-    leaseExpirationDurationInSeconds: 30
-    preferIpAddress: true  
     

@@ -18,7 +18,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.web.client.RestTemplate;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
@@ -52,8 +51,6 @@ class GetCensusInformationUseCaseTest {
 	
 	@BeforeEach
 	public void setUp() throws Exception {
-		RestTemplate restTemplate = new RestTemplate();
-		
 		this.wireMockServer.stubFor(WireMock.get("/zipcode/37188")
 				.willReturn(aResponse().withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE).withBodyFile("json/zipcode_37188.json")));
 
@@ -62,10 +59,10 @@ class GetCensusInformationUseCaseTest {
 
 		getCensusInformationUseCase = new GetCensusInformationUseCaseImpl(
 				new CensusDemographyRestServiceImpl(
-						new HTTPCommunication<DemographyRest>(DemographyRest.class, restTemplate), 
+						new HTTPCommunication<DemographyRest>(DemographyRest.class), 
 						"http://localhost:8080"), 
 				new CensusZipCodeRestServiceImpl(
-						new HTTPCommunication<ZipCodeRest>(ZipCodeRest.class, restTemplate), 
+						new HTTPCommunication<ZipCodeRest>(ZipCodeRest.class), 
 						"http://localhost:8080"));
 	}
 	

@@ -3,6 +3,7 @@ package br.com.trevezani.tutorial.census.core.usecase;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutionException;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
@@ -36,44 +37,63 @@ public class GetCensusInformationUseCaseImpl implements GetCensusInformationUseC
 			throw new ValidationException("Zip value is invalid");
 		}
 		
-		Map<String, String> exception = new HashMap<>();
-		
 		CompletableFuture<ZipCodeRest> callZipCodeRest = CompletableFuture.supplyAsync(() -> {
 			try {
 				return censusZipCodeRestService.call(correlationId, zip);
-			} catch (InternalErrorException | BusinessException e) {
-				exception.put("ZipCode", e.getMessage());
-				
-				log.error("[{}] Call ZipCode Error: {}", correlationId, e.getMessage());
+			} catch(BusinessException | InternalErrorException e) {
+				log.error("[{}] Call ZipCode Exception: {}", correlationId, e.getMessage());
+				throw new CompletionException(e);
 			}
-			
-			return null;
 		});
 
 		CompletableFuture<DemographyRest> callDemographyRest = CompletableFuture.supplyAsync(() -> {
 			try {
 				return censusDemographyRestService.call(correlationId, zip);
-			} catch (InternalErrorException | BusinessException e) {
-				exception.put("Demography", e.getMessage());
-
-				log.error("[{}] Call Demography Error: {}", correlationId, e.getMessage());
-			}			
-			
-			return null;
+			} catch(BusinessException | InternalErrorException e) {
+				log.error("[{}] Call Demography Exception: {}", correlationId, e.getMessage());
+				throw new CompletionException(e);
+			}
 		});		
 
+		return processCalls(callZipCodeRest, callDemographyRest);
+	}
+	
+	private Census processCalls(CompletableFuture<ZipCodeRest> callZipCodeRest, CompletableFuture<DemographyRest> callDemographyRest) throws BusinessException, InternalErrorException {
+		Map<String, String> exceptionMessage = new HashMap<>();
+		
 		ZipCodeRest zipCode = null;
 		DemographyRest demography = null;
-		
+
 		try {
 			zipCode = callZipCodeRest.get();
+		} catch (InterruptedException | ExecutionException e) {
+			if (e.getCause() != null) {
+				if (e.getCause() instanceof BusinessException) {
+					exceptionMessage.put("ZipCode", e.getCause().getMessage());
+				} else {
+					throw new InternalErrorException(e.getCause().getMessage());
+				}
+			} else {
+				throw new InternalErrorException(e.getMessage());
+			}
+		}
+		
+		try {
 			demography = callDemographyRest.get();
 		} catch (InterruptedException | ExecutionException e) {
-			throw new InternalErrorException(e.getMessage());
+			if (e.getCause() != null) {
+				if (e.getCause() instanceof BusinessException) {
+					exceptionMessage.put("Demography", e.getCause().getMessage());
+				} else {
+					throw new InternalErrorException(e.getCause().getMessage());
+				}
+			} else {
+				throw new InternalErrorException(e.getMessage());
+			}
 		}		
 		
-		if (!exception.isEmpty()) {
-			final String message = exception.entrySet()
+		if (!exceptionMessage.isEmpty()) {
+			final String message = exceptionMessage.entrySet()
 											.stream()
 											.map(entry -> String.join(": ", entry.getKey(),entry.getValue()))
 											.collect(Collectors.joining(", "));
@@ -83,8 +103,8 @@ public class GetCensusInformationUseCaseImpl implements GetCensusInformationUseC
 		
 		return merge.apply(zipCode, demography);
 	}
-	
-	public BiFunction<ZipCodeRest, DemographyRest, Census> merge = (zipCode, demography) -> {
+
+	private BiFunction<ZipCodeRest, DemographyRest, Census> merge = (zipCode, demography) -> {
 		Census census = new Census();
 		census.setPrimaryCity(zipCode.getPrimaryCity());
 		census.setState(zipCode.getState());

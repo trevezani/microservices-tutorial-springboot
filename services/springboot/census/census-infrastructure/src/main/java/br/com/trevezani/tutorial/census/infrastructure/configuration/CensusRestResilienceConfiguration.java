@@ -6,12 +6,9 @@ import java.util.concurrent.TimeoutException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
-import org.springframework.web.client.RestTemplate;
 
 import br.com.trevezani.tutorial.census.core.usecase.GetCensusInformationUseCase;
 import br.com.trevezani.tutorial.census.core.usecase.GetCensusInformationUseCaseImpl;
@@ -38,22 +35,10 @@ public class CensusRestResilienceConfiguration {
 	private String censuszipcodeURL;
 
 	@Autowired
-	private RestTemplate restTemplate;
-
-	@Autowired
 	private CircuitBreakerRegistry circuitBreakerRegistry;
 
 	@Autowired
 	private RetryRegistry retryRegistry;
-	
-	@Bean
-	@Primary
-	RestTemplate restTemplate(RestTemplateBuilder builder) {
-		return builder
-                .setConnectTimeout(Duration.ofMillis(5000))
-                .setReadTimeout(Duration.ofMillis(5000))
-                .build();
-	}	
 
 	@Bean
 	public CircuitBreakerRegistry createCircuitBreakerRegistry() {
@@ -87,12 +72,12 @@ public class CensusRestResilienceConfiguration {
 						new CensusDemographyRestResilienceServiceImpl(
 								circuitBreakerRegistry, 
 								retryRegistry, 
-								new HTTPCommunication<DemographyRest>(DemographyRest.class, restTemplate), 
+								new HTTPCommunication<DemographyRest>(DemographyRest.class), 
 								censusdemographyURL), 
 						new CensusZipCodeRestResilienceServiceImpl(
 								circuitBreakerRegistry, 
 								retryRegistry, 
-								new HTTPCommunication<ZipCodeRest>(ZipCodeRest.class, restTemplate), 
+								new HTTPCommunication<ZipCodeRest>(ZipCodeRest.class), 
 								censuszipcodeURL));
 	}
 }

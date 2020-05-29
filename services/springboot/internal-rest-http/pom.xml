@@ -18,5 +18,11 @@
 			<groupId>com.google.code.gson</groupId>
 			<artifactId>gson</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>br.com.trevezani.tutorial.internal</groupId>
+			<artifactId>internal-shared</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+			<scope>test</scope>
+		</dependency>		
 	</dependencies>
 </project>
