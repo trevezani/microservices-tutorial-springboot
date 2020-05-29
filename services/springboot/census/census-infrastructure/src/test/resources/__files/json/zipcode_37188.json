@@ -1,0 +1,11 @@
+{
+   "timestamp":"2020-05-28T20:13:48.853193",
+   "status":"200",
+   "data":{
+      "primaryCity":"White House",
+      "state":"TN",
+      "type":"STANDARD",
+      "decommissioned":"0",
+      "areaCodes":"615"
+   }
+}

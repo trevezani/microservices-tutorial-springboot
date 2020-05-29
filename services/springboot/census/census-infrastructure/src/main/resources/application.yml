@@ -1,0 +1,73 @@
+management:
+  endpoint:
+    beans:
+      enabled: true
+    health:
+      enabled: true
+    
+    metrics:
+      enabled: true
+    
+    prometheus:
+      enabled: true
+
+    loggers:
+      enabled: true
+
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+
+spring:
+  main:
+    banner-mode: "off"
+    allow-bean-definition-overriding: true
+  
+  application:
+    name: census
+
+  profiles:
+    active: default
+  
+---
+spring:
+  profiles: default
+
+server:
+  port: ${SERVER.PORT:1301}
+  
+---
+spring:
+  profiles: resilience
+
+server:
+  port: ${SERVER.PORT:1301}
+    
+  
+---
+spring:
+  profiles: eureka
+
+server:
+  port: ${SERVER.PORT:1301}
+        
+eureka:
+  client:
+    fetchRegistry: true
+    serviceUrl:
+      defaultZone: http://${EUREKA.USER:admin}:${EUREKA.PASS:admin}@${EUREKA.URI1:localhost:8761}/eureka,http://${EUREKA.USER:admin}:${EUREKA.PASS:admin}@${EUREKA.URI2:localhost:8761}/eureka
+
+    healthcheck:
+      enabled: true
+
+  instance:
+    leaseRenewalIntervalInSeconds: 10
+    leaseExpirationDurationInSeconds: 30
+    preferIpAddress: true
+        

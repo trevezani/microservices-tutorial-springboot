@@ -1,0 +1,46 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>br.com.trevezani.tutorial.zipcode</groupId>
+		<artifactId>census-zipcode</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+	</parent>
+
+	<groupId>br.com.trevezani.tutorial.zipcode.infrastructure</groupId>
+	<artifactId>census-zipcode-infrastructure</artifactId>
+
+	<dependencies>
+		<dependency>
+			<groupId>br.com.trevezani.tutorial.zipcode.core</groupId>
+			<artifactId>census-zipcode-core</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<finalName>${project.parent.artifactId}</finalName>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<goals>
+							<goal>
+								build-info
+							</goal>
+						</goals>
+						<configuration>
+							<additionalProperties>
+								<name>${project.parent.artifactId}</name>
+								<java.version>${java.version}</java.version>
+							</additionalProperties>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+</project>
