@@ -2,6 +2,8 @@ package br.com.trevezani.tutorial.census.core.usecase;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
@@ -36,25 +38,39 @@ public class GetCensusInformationUseCaseImpl implements GetCensusInformationUseC
 		
 		Map<String, String> exception = new HashMap<>();
 		
-		ZipCodeRest zipCode = null;
-		
-		try {
-			zipCode = censusZipCodeRestService.call(correlationId, zip);
-		} catch (BusinessException e) {
-			exception.put("ZipCode", e.getMessage());
+		CompletableFuture<ZipCodeRest> callZipCodeRest = CompletableFuture.supplyAsync(() -> {
+			try {
+				return censusZipCodeRestService.call(correlationId, zip);
+			} catch (InternalErrorException | BusinessException e) {
+				exception.put("ZipCode", e.getMessage());
+				
+				log.error("[{}] Call ZipCode Error: {}", correlationId, e.getMessage());
+			}
 			
-			log.error("[{}] Call ZipCode Error: {}", correlationId, e.getMessage());
-		}
-		
+			return null;
+		});
+
+		CompletableFuture<DemographyRest> callDemographyRest = CompletableFuture.supplyAsync(() -> {
+			try {
+				return censusDemographyRestService.call(correlationId, zip);
+			} catch (InternalErrorException | BusinessException e) {
+				exception.put("Demography", e.getMessage());
+
+				log.error("[{}] Call Demography Error: {}", correlationId, e.getMessage());
+			}			
+			
+			return null;
+		});		
+
+		ZipCodeRest zipCode = null;
 		DemographyRest demography = null;
 		
 		try {
-			demography = censusDemographyRestService.call(correlationId, zip);
-		} catch (BusinessException e) {
-			exception.put("Demography", e.getMessage());
-
-			log.error("[{}] Call Demography Error: {}", correlationId, e.getMessage());
-		}
+			zipCode = callZipCodeRest.get();
+			demography = callDemographyRest.get();
+		} catch (InterruptedException | ExecutionException e) {
+			throw new InternalErrorException(e.getMessage());
+		}		
 		
 		if (!exception.isEmpty()) {
 			final String message = exception.entrySet()
