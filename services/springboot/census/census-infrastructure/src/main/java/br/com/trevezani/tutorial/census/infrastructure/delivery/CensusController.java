@@ -6,6 +6,6 @@ import br.com.trevezani.tutorial.internal.exceptions.CensusException;
 
 public interface CensusController {
 
-	CensusResponse<CensusRest> getCensusInformation(String zip) throws CensusException;	
+	CensusResponse<CensusRest> getCensusInformation(String correlationId, String zip) throws CensusException;	
 	
 }

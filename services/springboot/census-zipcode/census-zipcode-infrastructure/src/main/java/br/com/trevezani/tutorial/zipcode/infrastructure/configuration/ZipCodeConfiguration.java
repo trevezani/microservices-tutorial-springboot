@@ -9,6 +9,7 @@ import org.springframework.boot.info.BuildProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import br.com.trevezani.tutorial.internal.utils.CorrelationUUID;
 import br.com.trevezani.tutorial.zipcode.core.InternalBuildProperties;
 import br.com.trevezani.tutorial.zipcode.core.usecase.GetInternalInformationUseCaseImpl;
 import br.com.trevezani.tutorial.zipcode.core.usecase.GetZipInformationUseCaseImpl;
@@ -24,6 +25,11 @@ public class ZipCodeConfiguration {
 	
 	@Autowired
 	private BuildProperties buildProperties;	
+	
+	@Bean
+	public CorrelationUUID createCorrelationUUID() {
+		return new CorrelationUUID();
+	}
 
 	@Bean
 	public ZipCodeRestConverter createZipCodeRestConverter() {

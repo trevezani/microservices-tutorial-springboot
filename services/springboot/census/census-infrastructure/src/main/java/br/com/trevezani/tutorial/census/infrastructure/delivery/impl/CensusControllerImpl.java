@@ -4,6 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
@@ -35,9 +36,9 @@ public class CensusControllerImpl implements CensusController {
 	@Override
 	@ResponseStatus(HttpStatus.OK)
 	@GetMapping(path = "/census/{zip}", produces = MediaType.APPLICATION_JSON_VALUE)
-	public CensusResponse<CensusRest> getCensusInformation(@PathVariable String zip) throws CensusException {
+	public CensusResponse<CensusRest> getCensusInformation(@RequestHeader(name = "x-correlation-id", required = false, defaultValue = "na") String correlationId, @PathVariable String zip) throws CensusException {
 		try {
-			return new CensusResponse<>(String.valueOf(HttpStatus.OK.value()), censusRestConverter.mapToRest(getCensusInformationUseCase.execute(correlationUUID.getCorrelationId(), zip)));
+			return new CensusResponse<>(String.valueOf(HttpStatus.OK.value()), censusRestConverter.mapToRest(getCensusInformationUseCase.execute(correlationUUID.getCorrelationId(correlationId), zip)));
 		} catch (ValidationException | BusinessException e) {
 			return new CensusResponse<>(String.valueOf(HttpStatus.BAD_REQUEST.value()), e.getMessage());
 		} catch (Exception e) {
