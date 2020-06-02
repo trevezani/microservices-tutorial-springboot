@@ -1,0 +1,30 @@
+version: '3'
+
+services:
+  prometheus:
+    image: prom/prometheus
+    ports:
+      - 9090:9090
+    volumes:
+      - ./prometheus-springboot.yml:/etc/prometheus/prometheus.yml:ro
+      - ./data/prometheus:/data
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/data'
+      - '--storage.tsdb.retention.time=74h'
+      - '--web.enable-lifecycle'
+
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    ports:
+      - 3000:3000
+    volumes:
+      - ./data/grafana:/var/lib/grafana
+    depends_on:
+      - prometheus
+
+networks:
+  default:
+    external:
+      name: consul-net

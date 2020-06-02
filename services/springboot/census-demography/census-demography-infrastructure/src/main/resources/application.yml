@@ -1,3 +1,14 @@
+spring:
+  main:
+    banner-mode: "off"
+    allow-bean-definition-overriding: true
+  
+  application:
+    name: census-demography
+
+  profiles:
+    active: ${PROFILE:default}
+
 management:
   endpoint:
     beans:
@@ -23,19 +34,10 @@ management:
     export:
       prometheus:
         enabled: true
-
-spring:
-  main:
-    banner-mode: "off"
-    allow-bean-definition-overriding: true
   
-  application:
-    name: census-demography
+    tags:
+      application: ${spring.application.name}
 
-  profiles:
-    active: ${PROFILE:default}
-
-  
 ---
 spring:
   profiles: default

@@ -17,8 +17,9 @@ services:
           "addresses" : {
             "http" : "0.0.0.0"
           },
-          "ports": {
-            "http": 8500
+          "telemetry": {
+            "prometheus_retention_time": "24h",
+            "disable_hostname": true
           },
           "log_level": "DEBUG",
           "connect" : {

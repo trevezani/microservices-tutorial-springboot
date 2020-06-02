@@ -168,8 +168,23 @@ config/census/censuszipcode.api.url = http://census-zipcode
 ```
 docker-compose -f compose/docker-compose-springboot-census.yml up
 ```
-* checking the memory
 
+Once the microservices are running, you can call:
+```
+curl http://localhost:1301/census/37188
+```
+
+* running the monitor:
+```
+docker-compose -f compose/docker-compose-springboot-monitor.yml up
+```
+* Grafana Dashbords:
+
+[https://grafana.com/grafana/dashboards/10642](https://grafana.com/grafana/dashboards/10642)
+
+[https://grafana.com/grafana/dashboards/4701](https://grafana.com/grafana/dashboards/4701)
+
+* checking the memory
 ```
 docker stats $(docker ps --format={{.Names}})
 ```
