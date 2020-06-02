@@ -153,7 +153,7 @@ or execute the bash `buildDocker.sh` inside the directory `services/springboot`
 ```
 docker network create -d bridge consul-net
 
-docker-compose -f compose/docker-compose-consul.yml up
+docker-compose -f compose/docker-compose-springboot-consul.yml up
 ```
 
 Link: [http://localhost:8500/ui](http://localhost:8500/ui)
@@ -166,7 +166,7 @@ config/census/censuszipcode.api.url = http://census-zipcode
 ```
 * running the microservices:
 ```
-docker-compose -f compose/docker-compose-census.yml up
+docker-compose -f compose/docker-compose-springboot-census.yml up
 ```
 * checking the memory
 
