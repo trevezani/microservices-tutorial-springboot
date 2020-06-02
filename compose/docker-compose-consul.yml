@@ -1,0 +1,77 @@
+version: '3'
+
+services:
+  consul-server-1:
+    image: consul:1.7.3
+    ports:
+      - "8500:8500"
+    environment:
+      CONSUL_LOCAL_CONFIG: >-
+        {
+          "server": true,
+          "node_name": "consul-server-1",
+          "bind_addr": "0.0.0.0",
+          "client_addr": "0.0.0.0",
+          "bootstrap_expect": 1,
+          "ui": true,
+          "addresses" : {
+            "http" : "0.0.0.0"
+          },
+          "ports": {
+            "http": 8500
+          },
+          "log_level": "DEBUG",
+          "connect" : {
+            "enabled" : true
+          }        
+        }    
+    command: "agent -server -bootstrap-expect 3 -ui -client 0.0.0.0 -bind 0.0.0.0"
+    
+  consul-server-2:
+    image: consul:1.7.3
+    environment:
+      CONSUL_LOCAL_CONFIG: >-
+        {
+          "server": true,
+          "node_name": "consul-server-2",
+          "bind_addr": "0.0.0.0",
+          "client_addr": "0.0.0.0",
+          "addresses" : {
+            "http" : "0.0.0.0"
+          },
+          "connect" : {
+            "enabled" : true
+          }        
+        }    
+    command: "agent -server -retry-join consul-server-1 -client 0.0.0.0 -bind 0.0.0.0"
+    
+  consul-server-3:
+    image: consul:1.7.3
+    environment:
+      CONSUL_LOCAL_CONFIG: >-
+        {
+          "server": true,
+          "node_name": "consul-server-3",
+          "bind_addr": "0.0.0.0",
+          "client_addr": "0.0.0.0",
+          "addresses" : {
+            "http" : "0.0.0.0"
+          },
+          "connect" : {
+            "enabled" : true
+          }        
+        }    
+    command: "agent -server -retry-join consul-server-1 -client 0.0.0.0 -bind 0.0.0.0"
+
+  consul-agent-1:
+    image: consul:1.7.3
+    command: "agent -retry-join consul-server-1 -client 0.0.0.0 -bind 0.0.0.0"
+
+  consul-agent-2:
+    image: consul:1.7.3
+    command: "agent -retry-join consul-server-1 -client 0.0.0.0 -bind 0.0.0.0"
+
+networks:
+  default:
+    external:
+      name: consul-net
