@@ -9,12 +9,12 @@ import br.com.trevezani.tutorial.census.core.usecase.GetCensusInformationUseCase
 import br.com.trevezani.tutorial.census.core.usecase.GetCensusInformationUseCaseImpl;
 import br.com.trevezani.tutorial.census.infrastructure.rest.impl.CensusDemographyRestServiceImpl;
 import br.com.trevezani.tutorial.census.infrastructure.rest.impl.CensusZipCodeRestServiceImpl;
-import br.com.trevezani.tutorial.internal.communication.HTTPCommunication;
+import br.com.trevezani.tutorial.internal.communication.HTTPCommunicationGeneral;
 import br.com.trevezani.tutorial.internal.delivery.rest.DemographyRest;
 import br.com.trevezani.tutorial.internal.delivery.rest.ZipCodeRest;
 
 @Configuration
-@Profile("default")
+@Profile({"default"})
 public class CensusRestConfiguration {
 	@Value("${censusdemography.api.url:http://censusdemography:8080}")
 	private String censusdemographyURL;
@@ -26,10 +26,10 @@ public class CensusRestConfiguration {
 	public GetCensusInformationUseCase createGetCensusInformationUseCase() {
 		return new GetCensusInformationUseCaseImpl(
 						new CensusDemographyRestServiceImpl(
-								new HTTPCommunication<DemographyRest>(DemographyRest.class), 
+								new HTTPCommunicationGeneral<DemographyRest>(DemographyRest.class), 
 								censusdemographyURL), 
 						new CensusZipCodeRestServiceImpl(
-								new HTTPCommunication<ZipCodeRest>(ZipCodeRest.class), 
+								new HTTPCommunicationGeneral<ZipCodeRest>(ZipCodeRest.class), 
 								censuszipcodeURL));
 	}
 }

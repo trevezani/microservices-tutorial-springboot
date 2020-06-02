@@ -4,7 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import br.com.trevezani.tutorial.census.core.port.CensusDemographyRestService;
-import br.com.trevezani.tutorial.internal.communication.HTTPCommunication;
+import br.com.trevezani.tutorial.internal.communication.HTTPCommunicationGeneral;
 import br.com.trevezani.tutorial.internal.communication.exception.BusinessException;
 import br.com.trevezani.tutorial.internal.communication.exception.InternalErrorException;
 import br.com.trevezani.tutorial.internal.communication.exception.ServiceNotAvailableException;
@@ -15,11 +15,11 @@ public class CensusDemographyRestServiceImpl implements CensusDemographyRestServ
 
 	private static final String SERVICE = "census-demography";
 
-	private final HTTPCommunication<DemographyRest> httpCommunication;
+	private final HTTPCommunicationGeneral<DemographyRest> httpCommunication;
 	
 	private final String remoteURL;
 	
-	public CensusDemographyRestServiceImpl(final HTTPCommunication<DemographyRest> httpCommunication, final String remoteURL) {
+	public CensusDemographyRestServiceImpl(final HTTPCommunicationGeneral<DemographyRest> httpCommunication, final String remoteURL) {
 		this.httpCommunication = httpCommunication;
 		this.remoteURL = remoteURL;
 	}

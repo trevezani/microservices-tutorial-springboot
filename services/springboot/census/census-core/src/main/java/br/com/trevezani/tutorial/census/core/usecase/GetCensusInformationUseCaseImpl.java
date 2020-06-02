@@ -5,6 +5,8 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
@@ -36,26 +38,32 @@ public class GetCensusInformationUseCaseImpl implements GetCensusInformationUseC
 		if (zip == null || zip.isBlank()) {
 			throw new ValidationException("Zip value is invalid");
 		}
+
+		ExecutorService executorService = Executors.newCachedThreadPool();
 		
 		CompletableFuture<ZipCodeRest> callZipCodeRest = CompletableFuture.supplyAsync(() -> {
 			try {
 				return censusZipCodeRestService.call(correlationId, zip);
-			} catch(BusinessException | InternalErrorException e) {
+			} catch (BusinessException | InternalErrorException e) {
 				log.error("[{}] Call ZipCode Exception: {}", correlationId, e.getMessage());
 				throw new CompletionException(e);
 			}
-		});
+		}, executorService);
 
 		CompletableFuture<DemographyRest> callDemographyRest = CompletableFuture.supplyAsync(() -> {
 			try {
 				return censusDemographyRestService.call(correlationId, zip);
-			} catch(BusinessException | InternalErrorException e) {
+			} catch (BusinessException | InternalErrorException e) {
 				log.error("[{}] Call Demography Exception: {}", correlationId, e.getMessage());
 				throw new CompletionException(e);
 			}
-		});		
+		}, executorService);
 
-		return processCalls(callZipCodeRest, callDemographyRest);
+		try {
+			return processCalls(callZipCodeRest, callDemographyRest);		
+		} finally {
+			executorService.shutdown();
+		}
 	}
 	
 	private Census processCalls(CompletableFuture<ZipCodeRest> callZipCodeRest, CompletableFuture<DemographyRest> callDemographyRest) throws BusinessException, InternalErrorException {

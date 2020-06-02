@@ -30,7 +30,7 @@ spring:
     allow-bean-definition-overriding: true
   
   application:
-    name: zipcode
+    name: census-zipcode
 
   profiles:
     active: ${PROFILE:default}
@@ -43,3 +43,21 @@ spring:
 server:
   port: ${SERVER.PORT:1401}
         
+
+---
+spring:
+  profiles: consul
+
+  cloud:
+    consul:
+      host: ${CONSUL.IP:localhost}
+      port: ${CONSUL.PORT:8500}
+      
+      discovery:
+        instanceId: "${spring.application.name}:${random.int[1,999999]}"
+      
+      config:
+        enabled: true      
+      
+server:
+  port: ${SERVER.PORT:1401}

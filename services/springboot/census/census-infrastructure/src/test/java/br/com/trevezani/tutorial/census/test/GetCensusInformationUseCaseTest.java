@@ -28,7 +28,7 @@ import br.com.trevezani.tutorial.census.core.usecase.GetCensusInformationUseCase
 import br.com.trevezani.tutorial.census.core.usecase.GetCensusInformationUseCaseImpl;
 import br.com.trevezani.tutorial.census.infrastructure.rest.impl.CensusDemographyRestServiceImpl;
 import br.com.trevezani.tutorial.census.infrastructure.rest.impl.CensusZipCodeRestServiceImpl;
-import br.com.trevezani.tutorial.internal.communication.HTTPCommunication;
+import br.com.trevezani.tutorial.internal.communication.HTTPCommunicationGeneral;
 import br.com.trevezani.tutorial.internal.communication.exception.BusinessException;
 import br.com.trevezani.tutorial.internal.communication.exception.InternalErrorException;
 import br.com.trevezani.tutorial.internal.delivery.rest.DemographyRest;
@@ -59,10 +59,10 @@ class GetCensusInformationUseCaseTest {
 
 		getCensusInformationUseCase = new GetCensusInformationUseCaseImpl(
 				new CensusDemographyRestServiceImpl(
-						new HTTPCommunication<DemographyRest>(DemographyRest.class), 
+						new HTTPCommunicationGeneral<DemographyRest>(DemographyRest.class), 
 						"http://localhost:8080"), 
 				new CensusZipCodeRestServiceImpl(
-						new HTTPCommunication<ZipCodeRest>(ZipCodeRest.class), 
+						new HTTPCommunicationGeneral<ZipCodeRest>(ZipCodeRest.class), 
 						"http://localhost:8080"));
 	}
 	

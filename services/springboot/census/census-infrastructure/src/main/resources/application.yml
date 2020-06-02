@@ -41,6 +41,7 @@ spring:
 
 server:
   port: ${SERVER.PORT:1301}
+
   
 ---
 spring:
@@ -49,4 +50,21 @@ spring:
 server:
   port: ${SERVER.PORT:1301}
     
-        
+            
+---
+spring:
+  profiles: consul
+
+  cloud:
+    consul:
+      host: ${CONSUL.IP:localhost}
+      port: ${CONSUL.PORT:8500}
+
+      config:
+        enabled: true      
+      
+      discovery:
+        instanceId: "${spring.application.name}:${random.int[1,999999]}"
+      
+server:
+  port: ${SERVER.PORT:1301}

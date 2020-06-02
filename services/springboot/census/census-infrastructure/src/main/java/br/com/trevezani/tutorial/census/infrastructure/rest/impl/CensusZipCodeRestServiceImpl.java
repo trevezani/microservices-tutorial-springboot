@@ -4,7 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import br.com.trevezani.tutorial.census.core.port.CensusZipCodeRestService;
-import br.com.trevezani.tutorial.internal.communication.HTTPCommunication;
+import br.com.trevezani.tutorial.internal.communication.HTTPCommunicationGeneral;
 import br.com.trevezani.tutorial.internal.communication.exception.BusinessException;
 import br.com.trevezani.tutorial.internal.communication.exception.InternalErrorException;
 import br.com.trevezani.tutorial.internal.communication.exception.ServiceNotAvailableException;
@@ -15,11 +15,11 @@ public class CensusZipCodeRestServiceImpl implements CensusZipCodeRestService {
 
 	private static final String SERVICE = "census-zipcode";
 	
-	private final HTTPCommunication<ZipCodeRest> httpCommunication;
+	private final HTTPCommunicationGeneral<ZipCodeRest> httpCommunication;
 	
 	private final String remoteURL;
 
-	public CensusZipCodeRestServiceImpl(final HTTPCommunication<ZipCodeRest> httpCommunication, final String remoteURL) {
+	public CensusZipCodeRestServiceImpl(final HTTPCommunicationGeneral<ZipCodeRest> httpCommunication, final String remoteURL) {
 		this.httpCommunication = httpCommunication;
 		this.remoteURL = remoteURL;
 	}
