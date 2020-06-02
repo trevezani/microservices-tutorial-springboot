@@ -5,7 +5,7 @@ This is a tutorial project to show many approach used with microservices.
 **Table of Contents**
 * [About the tutorial](#about-the-tutorial)
 * [Building, Testing and Running the springboot application](#building-testing-and-running-the-springboot-application)
-* [Contacts](#contacts)
+* [Building, Testing and Running the springboot application with Consul](#building-testing-and-running-the-springboot-application-with-consul)
 
 ***
 
@@ -33,6 +33,9 @@ mvn clean package -f services/springboot/census
 mvn clean package -f services/springboot/census-zipcode
 mvn clean package -f services/springboot/census-demography
 ```
+
+or execute the bash `buildDefault.sh` inside the directory `services/springboot`
+
 * testing the microservices (from the jar, after having built it):
 ```
 mvn clean verify -f services/springboot/census-zipcode
@@ -56,3 +59,118 @@ Once the microservices are running, you can call:
 curl http://localhost:1301/census/37188
 ```
 
+***
+
+## Building, Testing and Running the springboot application with Consul
+
+* running the consul for dev
+
+```
+docker run -d --name consul-1 -p 8500:8500 -e CONSUL_BIND_INTERFACE=eth0 consul
+
+// the join address is the adress for the first agent
+docker exec -it consul-1 consul members
+
+docker run -d --name consul-2 -e CONSUL_BIND_INTERFACE=eth0 -p 8501:8500 consul agent -dev -join=172.17.0.2
+docker run -d --name consul-3 -e CONSUL_BIND_INTERFACE=eth0 -p 8502:8500 consul agent -dev -join=172.17.0.2
+```
+* running the consul for prod
+```
+docker run -d --name consul-server-1 -p 8500:8500 consul:1.7.3 agent -server -bootstrap-expect 3 -ui -client 0.0.0.0 -bind 0.0.0.0
+
+// the join address is the adress for the first server
+docker exec -it consul-1 consul members
+
+docker run -d --name consul-server-2 consul:1.7.3 agent -server -retry-join 172.17.0.4 -client 0.0.0.0 -bind 0.0.0.0
+docker run -d --name consul-server-3 consul:1.7.3 agent -server -retry-join 172.17.0.4 -client 0.0.0.0 -bind 0.0.0.0
+
+docker run -d --name consul-client-1 consul:1.7.3 agent -retry-join 172.17.0.4 -client 0.0.0.0 -bind 0.0.0.0
+docker run -d --name consul-client-2 consul:1.7.3 agent -retry-join 172.17.0.4 -client 0.0.0.0 -bind 0.0.0.0
+```
+
+Link: [http://localhost:8500/ui](http://localhost:8500/ui)
+
+Inside the link, create the key/value below:
+
+```
+config/census/censusdemography.api.url = http://census-demography
+config/census/censuszipcode.api.url = http://census-zipcode
+config/census-zipcode/server.port = 0
+config/census-demography/server.port = 0
+```
+
+* checking the memory
+
+```
+docker stats $(docker ps --format={{.Names}})
+```
+
+* building the microservices:
+```
+mvn clean install -f services/springboot/parent
+mvn clean install -f services/springboot/internal-shared
+mvn clean install -f services/springboot/internal-rest-http
+mvn clean package -Pconsul -f services/springboot/census
+mvn clean package -Pconsul -f services/springboot/census-zipcode
+mvn clean package -Pconsul -f services/springboot/census-demography
+```
+
+or execute the bash `buildConsul.sh` inside the directory `services/springboot`
+
+* testing the microservices (from the jar, after having built it):
+```
+mvn clean verify -f services/springboot/census-zipcode
+mvn clean verify -f services/springboot/census-demography
+mvn clean verify -f services/springboot/census
+```
+* running the microservices (from the jar, after having built it):
+```
+java -Dspring.profiles.active=consul -Dspring.cloud.consul.host=[local IP] -jar census/census-infrastructure/target/census.jar
+java -Dspring.profiles.active=consul -Dspring.cloud.consul.host=[local IP] -jar census-zipcode/census-zipcode-infrastructure/target/census-zipcode.jar
+java -Dspring.profiles.active=consul -Dspring.cloud.consul.host=[local IP] -jar census-demography/census-demography-infrastructure/target/census-demography.jar
+```
+
+Once the microservices are running, you can call:
+```
+curl http://localhost:1301/census/37188
+```
+
+***
+
+## Building, Testing and Running the springboot application with Consul (docker mode)
+
+* building the microservices:
+```
+mvn clean install -f services/springboot/parent
+mvn clean install -f services/springboot/internal-shared
+mvn clean install -f services/springboot/internal-rest-http
+mvn clean package -Pconsul -f services/springboot/census
+mvn clean package -Pconsul -f services/springboot/census-zipcode
+mvn clean package -Pconsul -f services/springboot/census-demography
+
+mvn docker:build -f services/springboot/census/census-infrastructure
+mvn docker:build -f services/springboot/census-zipcode/census-zipcode-infrastructure
+mvn docker:build -f services/springboot/census-demography/census-demography-infrastructure
+```
+
+or execute the bash `buildDocker.sh` inside the directory `services/springboot`
+
+* running the consul:
+```
+docker network create -d bridge consul-net
+
+docker-compose -f compose/docker-compose-consul.yml up
+```
+
+Link: [http://localhost:8500/ui](http://localhost:8500/ui)
+
+Inside the link, create the key/value below:
+
+```
+config/census/censusdemography.api.url = http://census-demography
+config/census/censuszipcode.api.url = http://census-zipcode
+```
+* running the microservices:
+```
+docker-compose -f compose/docker-compose-census.yml up
+```
