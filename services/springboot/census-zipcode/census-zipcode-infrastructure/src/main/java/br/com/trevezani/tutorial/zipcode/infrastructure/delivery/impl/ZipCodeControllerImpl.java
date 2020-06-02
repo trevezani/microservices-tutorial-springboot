@@ -41,6 +41,8 @@ public class ZipCodeControllerImpl implements ZipCodeController {
 	@ResponseStatus(HttpStatus.OK)
 	@GetMapping(path = "/zipcode/{zip}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public CensusResponse<ZipCodeRest> getZipInformation(@RequestHeader(name = "x-correlation-id", required = false, defaultValue = "na") String correlationId, @PathVariable String zip) throws CensusException {
+		log.info("[{}] Request /zipcode/{}", correlationUUID.getCorrelationId(correlationId), zip);
+		
 		try {
 			return new CensusResponse<>(String.valueOf(HttpStatus.OK.value()), zipCodeRestConverter.mapToRest(getZipInformationUseCase.execute(zip)));
 

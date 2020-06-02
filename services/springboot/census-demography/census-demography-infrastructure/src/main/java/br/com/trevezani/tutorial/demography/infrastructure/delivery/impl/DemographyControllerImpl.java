@@ -41,6 +41,8 @@ public class DemographyControllerImpl implements DemographyController {
 	@ResponseStatus(HttpStatus.OK)
 	@GetMapping(path = "/demography/{zip}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public CensusResponse<DemographyRest> getDemographyInformation(@RequestHeader(name = "x-correlation-id", required = false, defaultValue = "na") String correlationId, @PathVariable String zip) throws CensusException {
+		log.info("[{}] Request /demography/{}", correlationUUID.getCorrelationId(correlationId), zip);
+		
 		try {
 			return new CensusResponse<>(String.valueOf(HttpStatus.OK.value()), demographyRestConverter.mapToRest(getDemographyInformationUseCase.execute(zip)));
 
