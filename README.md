@@ -74,7 +74,7 @@ docker exec -it consul-1 consul members
 docker run -d --name consul-2 -e CONSUL_BIND_INTERFACE=eth0 -p 8501:8500 consul agent -dev -join=172.17.0.2
 docker run -d --name consul-3 -e CONSUL_BIND_INTERFACE=eth0 -p 8502:8500 consul agent -dev -join=172.17.0.2
 ```
-* running the consul for prod
+* running the consul (another option)
 ```
 docker run -d --name consul-server-1 -p 8500:8500 consul:1.7.3 agent -server -bootstrap-expect 3 -ui -client 0.0.0.0 -bind 0.0.0.0
 
@@ -97,12 +97,6 @@ config/census/censusdemography.api.url = http://census-demography
 config/census/censuszipcode.api.url = http://census-zipcode
 config/census-zipcode/server.port = 0
 config/census-demography/server.port = 0
-```
-
-* checking the memory
-
-```
-docker stats $(docker ps --format={{.Names}})
 ```
 
 * building the microservices:
@@ -173,4 +167,9 @@ config/census/censuszipcode.api.url = http://census-zipcode
 * running the microservices:
 ```
 docker-compose -f compose/docker-compose-census.yml up
+```
+* checking the memory
+
+```
+docker stats $(docker ps --format={{.Names}})
 ```
