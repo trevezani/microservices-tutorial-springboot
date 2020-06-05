@@ -21,7 +21,6 @@ services:
             "prometheus_retention_time": "24h",
             "disable_hostname": true
           },
-          "log_level": "DEBUG",
           "connect" : {
             "enabled" : true
           }        
