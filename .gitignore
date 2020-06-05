@@ -114,6 +114,10 @@ RemoteSystemsTempFiles
 
 compose/data
 
+jmeter-dir
+jmeter.log
+jmeter-result.out
+
 services/springboot/.project
 services/springboot/.settings/
 services/springboot/census-demography/.project
