@@ -11,17 +11,11 @@ import br.com.trevezani.tutorial.census.core.InternalBuildProperties;
 import br.com.trevezani.tutorial.census.core.usecase.GetInternalInformationUseCaseImpl;
 import br.com.trevezani.tutorial.census.infrastructure.delivery.converters.CensusRestConverter;
 import br.com.trevezani.tutorial.census.infrastructure.delivery.converters.InformationRestConverter;
-import br.com.trevezani.tutorial.internal.utils.CorrelationUUID;
 
 @Configuration
 public class CensusConfiguration {
 	@Autowired
 	private BuildProperties buildProperties;	
-	
-	@Bean
-	public CorrelationUUID createCorrelationUUID() {
-		return new CorrelationUUID();
-	}
 	
 	@Bean
 	public InformationRestConverter createInformationRestConverter() {

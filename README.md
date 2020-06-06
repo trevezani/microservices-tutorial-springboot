@@ -178,11 +178,21 @@ curl http://localhost:1301/census/37188
 ```
 docker-compose -f compose/docker-compose-springboot-monitor.yml up
 ```
-* Grafana Dashbords:
+
+Links: [[Prometheus]](http://localhost:9090/) [[Grafana]](http://localhost:3000/)
+
+Grafana Dashbords:
 
 [https://grafana.com/grafana/dashboards/10642](https://grafana.com/grafana/dashboards/10642)
 
 [https://grafana.com/grafana/dashboards/4701](https://grafana.com/grafana/dashboards/4701)
+
+* running the logging:
+```
+docker-compose -f compose/docker-compose-springboot-logging.yml up
+```
+
+Link: [http://localhost:5601/](http://localhost:5601/)
 
 * checking the memory
 ```

@@ -17,8 +17,8 @@ import io.github.resilience4j.retry.RetryRegistry;
 import io.vavr.CheckedFunction0;
 
 public class CensusDemographyRestResilienceServiceImpl implements CensusDemographyRestService {
-	Logger log = LoggerFactory.getLogger(this.getClass());
-
+	Logger log = LoggerFactory.getLogger(this.getClass());	
+	
 	private static final String SERVICE = "census-demography";
 
 	private final CircuitBreakerRegistry circuitBreakerRegistry;
@@ -72,7 +72,7 @@ public class CensusDemographyRestResilienceServiceImpl implements CensusDemograp
 	}
 	
 	private DemographyRest fallback(final String correlationId, String message) {
-		log.error("[{}] Fallback :: {}", correlationId, message);
+		log.error("Fallback :: {}", message);
 
 		DemographyRest rest = new DemographyRest();
 		rest.setStateName("NA");

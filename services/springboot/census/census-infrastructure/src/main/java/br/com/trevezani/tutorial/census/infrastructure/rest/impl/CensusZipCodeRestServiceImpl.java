@@ -11,8 +11,8 @@ import br.com.trevezani.tutorial.internal.communication.exception.ServiceNotAvai
 import br.com.trevezani.tutorial.internal.delivery.rest.ZipCodeRest;
 
 public class CensusZipCodeRestServiceImpl implements CensusZipCodeRestService {
-	Logger log = LoggerFactory.getLogger(this.getClass());
-
+	Logger log = LoggerFactory.getLogger(this.getClass());	
+	
 	private static final String SERVICE = "census-zipcode";
 	
 	private final HTTPCommunicationGeneral<ZipCodeRest> httpCommunication;
@@ -27,7 +27,7 @@ public class CensusZipCodeRestServiceImpl implements CensusZipCodeRestService {
 	@Override
 	public ZipCodeRest call(final String correlationId, final String zip) throws InternalErrorException, BusinessException {
 		final String url = remoteURL.concat("/zipcode/").concat(zip);
-
+		
 		try {
 			return this.internal(correlationId, url);
 		} catch (ServiceNotAvailableException e) {
@@ -50,7 +50,7 @@ public class CensusZipCodeRestServiceImpl implements CensusZipCodeRestService {
 	}
 
 	private ZipCodeRest fallback(final String correlationId, String message) {
-		log.error("[{}] Fallback :: {}", correlationId, message);
+		log.error("Fallback :: {}", message);
 
 		ZipCodeRest rest = new ZipCodeRest();
 		rest.setType("NA");

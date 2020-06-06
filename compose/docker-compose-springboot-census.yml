@@ -2,49 +2,69 @@ version: '3'
 
 services:
   census:
+    container_name: tutorial-census
     image: census:0.0.1-SNAPSHOT
     ports:
       - "1301:1301"
     environment:
       - spring.profiles.active=consul
-      - spring.cloud.consul.host=consul-server-1
+      - spring.cloud.consul.host=tutorial-consul-server-1
       - PORT_EXTERNAL=1301
+    labels:      
+      - "elastic_index=springboot"
+      - "send.logs=true"
 
   census-zipcode-1:
+    container_name: tutorial-zipcode-1
     image: census-zipcode:0.0.1-SNAPSHOT
     ports:
       - "14011:14011"
     environment:
       - spring.profiles.active=consul
-      - spring.cloud.consul.host=consul-server-1
+      - spring.cloud.consul.host=tutorial-consul-server-1
       - PORT_EXTERNAL=14011
+    labels:      
+      - "elastic_index=springboot"
+      - "send.logs=true"
 
   census-zipcode-2:
+    container_name: tutorial-zipcode-2
     image: census-zipcode:0.0.1-SNAPSHOT
     ports:
       - "14012:14012"
     environment:
       - spring.profiles.active=consul
-      - spring.cloud.consul.host=consul-server-1
+      - spring.cloud.consul.host=tutorial-consul-server-1
       - PORT_EXTERNAL=14012
+    labels:      
+      - "elastic_index=springboot"
+      - "send.logs=true"
 
   census-demography-1:
+    container_name: tutorial-demography-1
     image: census-demography:0.0.1-SNAPSHOT
     ports:
       - "14021:14021"
     environment:
       - spring.profiles.active=consul
-      - spring.cloud.consul.host=consul-server-1
+      - spring.cloud.consul.host=tutorial-consul-server-1
       - PORT_EXTERNAL=14021
+    labels:      
+      - "elastic_index=springboot"
+      - "send.logs=true"
 
   census-demography-2:
+    container_name: tutorial-demography-2
     image: census-demography:0.0.1-SNAPSHOT
     ports:
       - "14022:14022"
     environment:
       - spring.profiles.active=consul
-      - spring.cloud.consul.host=consul-server-1
+      - spring.cloud.consul.host=tutorial-consul-server-1
       - PORT_EXTERNAL=14022
+    labels:      
+      - "elastic_index=springboot"
+      - "send.logs=true"
 
 networks:
   default:

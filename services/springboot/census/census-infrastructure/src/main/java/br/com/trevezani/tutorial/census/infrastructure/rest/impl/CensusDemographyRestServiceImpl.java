@@ -11,8 +11,8 @@ import br.com.trevezani.tutorial.internal.communication.exception.ServiceNotAvai
 import br.com.trevezani.tutorial.internal.delivery.rest.DemographyRest;
 
 public class CensusDemographyRestServiceImpl implements CensusDemographyRestService {
-	Logger log = LoggerFactory.getLogger(this.getClass());
-
+	Logger log = LoggerFactory.getLogger(this.getClass());	
+	
 	private static final String SERVICE = "census-demography";
 
 	private final HTTPCommunicationGeneral<DemographyRest> httpCommunication;
@@ -49,7 +49,7 @@ public class CensusDemographyRestServiceImpl implements CensusDemographyRestServ
 	}
 	
 	private DemographyRest fallback(final String correlationId, String message) {
-		log.error("[{}] Fallback :: {}", correlationId, message);
+		log.error("Fallback :: {}", message);
 
 		DemographyRest rest = new DemographyRest();
 		rest.setStateName("NA");

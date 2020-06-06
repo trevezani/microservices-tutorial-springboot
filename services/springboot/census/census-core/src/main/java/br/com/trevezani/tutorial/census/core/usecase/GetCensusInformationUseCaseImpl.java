@@ -21,9 +21,10 @@ import br.com.trevezani.tutorial.internal.communication.exception.BusinessExcept
 import br.com.trevezani.tutorial.internal.communication.exception.InternalErrorException;
 import br.com.trevezani.tutorial.internal.delivery.rest.DemographyRest;
 import br.com.trevezani.tutorial.internal.delivery.rest.ZipCodeRest;
+import br.com.trevezani.tutorial.internal.log.AsyncUtils;
 
 public class GetCensusInformationUseCaseImpl implements GetCensusInformationUseCase {
-	Logger log = LoggerFactory.getLogger(this.getClass());
+	Logger log = LoggerFactory.getLogger(this.getClass());	
 	
 	private final CensusDemographyRestService censusDemographyRestService;
 	private final CensusZipCodeRestService censusZipCodeRestService;
@@ -38,26 +39,26 @@ public class GetCensusInformationUseCaseImpl implements GetCensusInformationUseC
 		if (zip == null || zip.isBlank()) {
 			throw new ValidationException("Zip value is invalid");
 		}
-
-		ExecutorService executorService = Executors.newCachedThreadPool();
 		
-		CompletableFuture<ZipCodeRest> callZipCodeRest = CompletableFuture.supplyAsync(() -> {
+		ExecutorService executorService = Executors.newCachedThreadPool();
+
+		CompletableFuture<ZipCodeRest> callZipCodeRest = CompletableFuture.supplyAsync(AsyncUtils.withMdc(() -> {
 			try {
 				return censusZipCodeRestService.call(correlationId, zip);
 			} catch (BusinessException | InternalErrorException e) {
-				log.error("[{}] Call ZipCode Exception: {}", correlationId, e.getMessage());
+				log.error("Call ZipCode Exception: {}", e.getMessage());
 				throw new CompletionException(e);
 			}
-		}, executorService);
-
-		CompletableFuture<DemographyRest> callDemographyRest = CompletableFuture.supplyAsync(() -> {
+		}), executorService);
+		
+		CompletableFuture<DemographyRest> callDemographyRest = CompletableFuture.supplyAsync(AsyncUtils.withMdc(() -> {
 			try {
 				return censusDemographyRestService.call(correlationId, zip);
 			} catch (BusinessException | InternalErrorException e) {
-				log.error("[{}] Call Demography Exception: {}", correlationId, e.getMessage());
+				log.error("Call Demography Exception: {}", e.getMessage());
 				throw new CompletionException(e);
 			}
-		}, executorService);
+		}), executorService);
 
 		try {
 			return processCalls(callZipCodeRest, callDemographyRest);		

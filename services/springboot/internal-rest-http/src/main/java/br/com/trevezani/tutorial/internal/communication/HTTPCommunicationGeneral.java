@@ -12,8 +12,6 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 
 import com.google.gson.Gson;
@@ -30,8 +28,6 @@ import br.com.trevezani.tutorial.internal.communication.exception.ServiceNotAvai
 import br.com.trevezani.tutorial.internal.communication.response.CensusResponse;
 
 public class HTTPCommunicationGeneral<T> implements HTTPCommunication<T> {
-	Logger log = LoggerFactory.getLogger(this.getClass());
-	
 	private final Class<T> clazz;
 
 	private final Gson gson;
@@ -54,8 +50,6 @@ public class HTTPCommunicationGeneral<T> implements HTTPCommunication<T> {
 	
 	@Override
 	public Optional<T> callGetService(final String correlationId, final String service, final String url) throws ServiceNotAvailableException, InternalErrorException, BusinessException {
-		log.info("[{}] Calling {}", correlationId, url);
-
 		try {
 		    var request = HttpRequest.newBuilder(URI.create(url))
 		    		.GET()

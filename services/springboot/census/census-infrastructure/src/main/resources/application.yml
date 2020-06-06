@@ -38,20 +38,17 @@ management:
     tags:
       application: ${spring.application.name}
 
+server:
+  port: 1301
+
 ---
 spring:
   profiles: default
-
-server:
-  port: ${SERVER.PORT:1301}
 
   
 ---
 spring:
   profiles: resilience
-
-server:
-  port: ${SERVER.PORT:1301}
     
             
 ---
@@ -68,6 +65,3 @@ spring:
       
       discovery:
         instanceId: "${spring.application.name}:${random.int[1,999999]}"
-      
-server:
-  port: ${SERVER.PORT:1301}

@@ -5,18 +5,18 @@ global:
 scrape_configs:
   - job_name: 'prometheus'
     static_configs:
-      - targets: ['prometheus:9090']
+      - targets: ['tutorial-prometheus:9090']
       
   - job_name: 'consul'
     static_configs:
-      - targets: ['consul-server-1:8500']
+      - targets: ['tutorial-consul-server-1:8500']
     metrics_path: '/v1/agent/metrics'
     params:
       format: ['prometheus']
   
   - job_name: 'services'
     consul_sd_configs:
-      - server: 'consul-server-1:8500'
+      - server: 'tutorial-consul-server-1:8500'
         services: []
     relabel_configs:
       - source_labels: ['__meta_consul_service_id']

@@ -38,12 +38,12 @@ management:
     tags:
       application: ${spring.application.name}
 
+server:
+  port: 1401
+
 ---
 spring:
   profiles: default
-
-server:
-  port: ${SERVER.PORT:1401}
         
 
 ---
@@ -60,6 +60,3 @@ spring:
       
       config:
         enabled: true      
-      
-server:
-  port: ${SERVER.PORT:1401}

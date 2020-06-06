@@ -15,7 +15,6 @@ import br.com.trevezani.tutorial.demography.core.usecase.GetInternalInformationU
 import br.com.trevezani.tutorial.demography.infrastructure.delivery.converters.DemographyRestConverter;
 import br.com.trevezani.tutorial.demography.infrastructure.delivery.converters.InformationRestConverter;
 import br.com.trevezani.tutorial.demography.infrastructure.persistence.impl.DemographyServiceImpl;
-import br.com.trevezani.tutorial.internal.utils.CorrelationUUID;
 
 @Configuration
 public class DemographyConfiguration {
@@ -25,11 +24,6 @@ public class DemographyConfiguration {
 	
 	@Autowired
 	private BuildProperties buildProperties;	
-	
-	@Bean
-	public CorrelationUUID createCorrelationUUID() {
-		return new CorrelationUUID();
-	}
 
 	@Bean
 	public DemographyRestConverter createDemographyRestConverter() {

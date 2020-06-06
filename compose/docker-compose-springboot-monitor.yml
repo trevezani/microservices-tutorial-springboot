@@ -2,6 +2,7 @@ version: '3'
 
 services:
   prometheus:
+    container_name: tutorial-prometheus
     image: prom/prometheus
     ports:
       - 9090:9090
@@ -15,8 +16,8 @@ services:
       - '--web.enable-lifecycle'
 
   grafana:
+    container_name: tutorial-grafana
     image: grafana/grafana
-    container_name: grafana
     ports:
       - 3000:3000
     volumes:

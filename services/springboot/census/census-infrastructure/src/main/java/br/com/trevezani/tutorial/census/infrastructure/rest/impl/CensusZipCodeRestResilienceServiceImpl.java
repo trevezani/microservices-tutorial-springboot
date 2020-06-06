@@ -17,10 +17,10 @@ import io.github.resilience4j.retry.RetryRegistry;
 import io.vavr.CheckedFunction0;
 
 public class CensusZipCodeRestResilienceServiceImpl implements CensusZipCodeRestService {
-	Logger log = LoggerFactory.getLogger(this.getClass());
-
+	Logger log = LoggerFactory.getLogger(this.getClass());	
+	
 	private static final String SERVICE = "census-zipcode";
-
+	
 	private final CircuitBreakerRegistry circuitBreakerRegistry;
 	private final RetryRegistry retryRegistry;
 	
@@ -73,7 +73,7 @@ public class CensusZipCodeRestResilienceServiceImpl implements CensusZipCodeRest
 	}
 
 	private ZipCodeRest fallback(final String correlationId, String message) {
-		log.error("[{}] Fallback :: {}", correlationId, message);
+		log.error("Fallback :: {}", message);
 
 		ZipCodeRest rest = new ZipCodeRest();
 		rest.setType("NA");

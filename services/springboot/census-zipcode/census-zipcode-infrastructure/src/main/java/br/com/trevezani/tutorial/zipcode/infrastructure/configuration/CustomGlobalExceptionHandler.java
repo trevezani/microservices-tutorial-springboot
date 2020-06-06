@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.slf4j.MDC;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -18,6 +19,7 @@ public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler
     	CustomErrorResponse errors = new CustomErrorResponse();
         errors.setTimestamp(LocalDateTime.now());
         errors.setMessage(ex.getMessage());
+        errors.setCorrelationId(MDC.get("correlationId"));
         
     	if (ex instanceof NullPointerException) {
             errors.setStatus(String.valueOf(HttpStatus.BAD_REQUEST.value()));
@@ -33,6 +35,7 @@ class CustomErrorResponse {
 	private LocalDateTime timestamp;
 	private String status;
 	private String message;
+	private String correlationId;
 
 	public CustomErrorResponse() {
 		
@@ -60,5 +63,13 @@ class CustomErrorResponse {
 
 	public void setMessage(String message) {
 		this.message = message;
+	}
+
+	public String getCorrelationId() {
+		return correlationId;
+	}
+
+	public void setCorrelationId(String correlationId) {
+		this.correlationId = correlationId;
 	}
 }

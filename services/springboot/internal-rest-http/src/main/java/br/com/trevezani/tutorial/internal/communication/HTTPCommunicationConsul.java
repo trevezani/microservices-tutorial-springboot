@@ -56,8 +56,6 @@ public class HTTPCommunicationConsul<T> implements HTTPCommunication<T> {
 	
 	@Override
 	public Optional<T> callGetService(final String correlationId, final String service, final String url) throws ServiceNotAvailableException, InternalErrorException, BusinessException {
-		log.info("[{}] Calling {}", correlationId, url);
-
 		try {
 			var headers = new HttpHeaders();
 			headers.setContentType(MediaType.APPLICATION_JSON);
@@ -93,7 +91,7 @@ public class HTTPCommunicationConsul<T> implements HTTPCommunication<T> {
 		} catch (HttpStatusCodeException e) {
 			int statusCode = e.getStatusCode().value();
 
-			log.info("[{}] Error ({}) {}", correlationId, statusCode, e.getMessage());
+			log.info("Error ({}) {}", statusCode, e.getMessage());
 
 			if (e.getResponseBodyAsString().isBlank()) {
 				throw new InternalErrorException(e.getMessage());
