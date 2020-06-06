@@ -101,13 +101,21 @@ public class GetCensusInformationUseCaseImpl implements GetCensusInformationUseC
 			}
 		}		
 		
-		if (!exceptionMessage.isEmpty()) {
-			final String message = exceptionMessage.entrySet()
-											.stream()
-											.map(entry -> String.join(": ", entry.getKey(),entry.getValue()))
-											.collect(Collectors.joining(", "));
-			
-			throw new BusinessException(message);
+		if (zipCode == null && demography == null) {
+			if (exceptionMessage.isEmpty()) {
+				throw new InternalErrorException("Services are currently unavailable. You can try again later.");
+			} else {
+				final String message = exceptionMessage.entrySet()
+						.stream()
+						.map(entry -> String.join(": ", entry.getKey(),entry.getValue()))
+						.collect(Collectors.joining(", "));
+
+				throw new BusinessException(message);
+			}
+		}
+		
+		if ((zipCode != null && zipCode.getFallback()) && (demography != null && demography.getFallback())) {
+			throw new InternalErrorException("Services are currently unavailable. You can try again later.");
 		}
 		
 		return merge.apply(zipCode, demography);
@@ -115,13 +123,19 @@ public class GetCensusInformationUseCaseImpl implements GetCensusInformationUseC
 
 	private BiFunction<ZipCodeRest, DemographyRest, Census> merge = (zipCode, demography) -> {
 		Census census = new Census();
-		census.setPrimaryCity(zipCode.getPrimaryCity());
-		census.setState(zipCode.getState());
-		census.setType(zipCode.getType());
-		census.setAreaCodes(zipCode.getAreaCodes());
-		census.setStateName(demography.getStateName());
-		census.setPopulation(demography.getPopulation());
-		census.setDensity(demography.getDensity());
+		
+		if (zipCode != null) {
+			census.setPrimaryCity(zipCode.getPrimaryCity());
+			census.setState(zipCode.getState());
+			census.setType(zipCode.getType());
+			census.setAreaCodes(zipCode.getAreaCodes());
+		}
+
+		if (demography != null) {
+			census.setStateName(demography.getStateName());
+			census.setPopulation(demography.getPopulation());
+			census.setDensity(demography.getDensity());
+		}
 
 		return census;
 	};

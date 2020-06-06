@@ -5,12 +5,14 @@ import java.io.Serializable;
 public class DemographyRest implements Serializable {
 	private static final long serialVersionUID = -6153470786545851391L;
 
+	private Boolean fallback = Boolean.FALSE;
+	
 	private String stateName;
 	private String population;
 	private String density;
 
 	public DemographyRest() {
-		
+
 	}
 
 	public DemographyRest(String stateName, String population, String density) {
@@ -44,8 +46,17 @@ public class DemographyRest implements Serializable {
 		this.density = density;
 	}
 
+	public Boolean getFallback() {
+		return fallback;
+	}
+
+	public void setFallback(Boolean fallback) {
+		this.fallback = fallback;
+	}
+
 	@Override
 	public String toString() {
-		return "Demography [stateName=" + stateName + ", population=" + population + ", density=" + density + "]";
+		return "DemographyRest [fallback=" + fallback + ", stateName=" + stateName + ", population=" + population
+				+ ", density=" + density + "]";
 	}
 }

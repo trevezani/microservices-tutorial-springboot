@@ -53,6 +53,7 @@ public class CensusZipCodeRestServiceImpl implements CensusZipCodeRestService {
 		log.error("Fallback :: {}", message);
 
 		ZipCodeRest rest = new ZipCodeRest();
+		rest.setFallback(Boolean.TRUE);
 		rest.setType("NA");
 		rest.setPrimaryCity("NA");
 		rest.setAreaCodes("NA");

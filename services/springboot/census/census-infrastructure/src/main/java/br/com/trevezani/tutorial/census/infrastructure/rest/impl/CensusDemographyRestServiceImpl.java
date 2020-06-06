@@ -52,6 +52,7 @@ public class CensusDemographyRestServiceImpl implements CensusDemographyRestServ
 		log.error("Fallback :: {}", message);
 
 		DemographyRest rest = new DemographyRest();
+		rest.setFallback(Boolean.TRUE);
 		rest.setStateName("NA");
 		rest.setPopulation("NA");
 		rest.setDensity("NA");

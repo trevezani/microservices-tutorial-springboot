@@ -5,6 +5,8 @@ import java.io.Serializable;
 public class ZipCodeRest implements Serializable {
 	private static final long serialVersionUID = 7459885047164149123L;
 
+	private Boolean fallback = Boolean.FALSE;
+	
 	private String primaryCity;
 	private String state;
 	private String type;
@@ -64,9 +66,17 @@ public class ZipCodeRest implements Serializable {
 		this.areaCodes = areaCodes;
 	}
 
+	public Boolean getFallback() {
+		return fallback;
+	}
+
+	public void setFallback(Boolean fallback) {
+		this.fallback = fallback;
+	}
+
 	@Override
 	public String toString() {
-		return "ZipCodeRest [primaryCity=" + primaryCity + ", state=" + state + ", type=" + type + ", decommissioned="
-				+ decommissioned + ", areaCodes=" + areaCodes + "]";
+		return "ZipCodeRest [fallback=" + fallback + ", primaryCity=" + primaryCity + ", state=" + state + ", type="
+				+ type + ", decommissioned=" + decommissioned + ", areaCodes=" + areaCodes + "]";
 	}
 }
