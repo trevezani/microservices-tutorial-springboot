@@ -2,6 +2,7 @@ package br.com.trevezani.tutorial.internal.communication;
 
 import java.lang.reflect.Type;
 import java.time.LocalDateTime;
+import java.util.Map;
 import java.util.Optional;
 
 import org.slf4j.Logger;
@@ -16,6 +17,9 @@ import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectReader;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializationContext;
@@ -36,6 +40,7 @@ public class HTTPCommunicationConsul<T> implements HTTPCommunication<T> {
 	private final Class<T> clazz;
 
 	private final Gson gson;
+	private ObjectReader readerMap;
 	
 	public HTTPCommunicationConsul(final RestTemplate template, final Class<T> clazz) {
 		this.template = template;
@@ -52,6 +57,8 @@ public class HTTPCommunicationConsul<T> implements HTTPCommunication<T> {
 				return LocalDateTime.parse(json.getAsJsonPrimitive().getAsString());
 			}
 		}).create();
+		
+		this.readerMap = new ObjectMapper().readerFor(Map.class);
 	}
 	
 	@Override
@@ -96,7 +103,19 @@ public class HTTPCommunicationConsul<T> implements HTTPCommunication<T> {
 			if (e.getResponseBodyAsString().isBlank()) {
 				throw new InternalErrorException(e.getMessage());
 			} else {
-				throw new InternalErrorException(e.getResponseBodyAsString());
+				Map<String, String> map = null;
+
+				try {
+					map = readerMap.readValue(e.getResponseBodyAsString());
+				} catch (JsonProcessingException ex) {
+					throw new InternalErrorException(e.getResponseBodyAsString());
+				}
+
+				if (statusCode == HttpStatus.BAD_REQUEST.value()) {
+					throw new BusinessException(map.get("message"));
+				} else {
+					throw new InternalErrorException(map.get("message"));
+				}
 			}
 		}
 		

@@ -13,12 +13,6 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>net.logstash.logback</groupId>
-			<artifactId>logstash-logback-encoder</artifactId>
-			<version>${logstash.version}</version>
-		</dependency>
-
-		<dependency>
 			<groupId>br.com.trevezani.tutorial.zipcode.core</groupId>
 			<artifactId>census-zipcode-core</artifactId>
 			<version>0.0.1-SNAPSHOT</version>

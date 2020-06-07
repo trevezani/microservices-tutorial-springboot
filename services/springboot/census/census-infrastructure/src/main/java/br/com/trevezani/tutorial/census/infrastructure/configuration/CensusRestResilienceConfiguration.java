@@ -58,8 +58,8 @@ public class CensusRestResilienceConfiguration {
 	@Bean
 	RestTemplate loadBalanced(RestTemplateBuilder builder) {
 		return builder
-                .setConnectTimeout(Duration.ofMillis(5000))
-                .setReadTimeout(Duration.ofMillis(5000))
+                .setConnectTimeout(Duration.ofMillis(8000))
+                .setReadTimeout(Duration.ofMillis(8000))
                 .build();
 	}
 	
@@ -67,7 +67,7 @@ public class CensusRestResilienceConfiguration {
 	public CircuitBreakerRegistry createCircuitBreakerRegistry() {
 		CircuitBreakerConfig circuitBreakerConfig = CircuitBreakerConfig.custom()
 			    .failureRateThreshold(50)
-			    .waitDurationInOpenState(Duration.ofMillis(2000))
+			    .waitDurationInOpenState(Duration.ofMillis(8000))
 			    .permittedNumberOfCallsInHalfOpenState(2)
 			    .slidingWindowSize(10)
 			    .minimumNumberOfCalls(5)

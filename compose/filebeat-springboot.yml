@@ -26,3 +26,9 @@ output.elasticsearch:
   hosts: ["tutorial-elasticsearch:9200"]
   protocol: http
   index: "%{[docker.container.labels.elastic_index]}-%{[agent.version]}-%{+yyyy.MM.dd}"
+  
+setup.dashboards:
+  enabled: true
+  
+setup.kibana:
+  host: "tutorial-kibana:5601"

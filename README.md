@@ -104,6 +104,7 @@ config/census-demography/server.port = 0
 mvn clean install -f services/springboot/parent
 mvn clean install -f services/springboot/internal-shared
 mvn clean install -f services/springboot/internal-rest-http
+mvn clean package -f services/springboot/census-gateway
 mvn clean package -Pconsul -f services/springboot/census
 mvn clean package -Pconsul -f services/springboot/census-zipcode
 mvn clean package -Pconsul -f services/springboot/census-demography
@@ -119,6 +120,7 @@ mvn clean verify -f services/springboot/census
 ```
 * running the microservices (from the jar, after having built it):
 ```
+java -Dspring.cloud.consul.host=[local IP] -jar census-gateway/target/census-gateway.jar
 java -Dspring.profiles.active=consul -Dspring.cloud.consul.host=[local IP] -jar census/census-infrastructure/target/census.jar
 java -Dspring.profiles.active=consul -Dspring.cloud.consul.host=[local IP] -jar census-zipcode/census-zipcode-infrastructure/target/census-zipcode.jar
 java -Dspring.profiles.active=consul -Dspring.cloud.consul.host=[local IP] -jar census-demography/census-demography-infrastructure/target/census-demography.jar
@@ -127,6 +129,10 @@ java -Dspring.profiles.active=consul -Dspring.cloud.consul.host=[local IP] -jar 
 Once the microservices are running, you can call:
 ```
 curl http://localhost:1301/census/37188
+
+curl http://localhost:1200/census/37188
+curl http://localhost:1200/zipcode/37188
+curl http://localhost:1200/demography/37188
 ```
 
 ***
@@ -171,7 +177,19 @@ docker-compose -f compose/docker-compose-springboot-census.yml up
 
 Once the microservices are running, you can call:
 ```
-curl http://localhost:1301/census/37188
+curl http://localhost:1311/census/37188
+```
+
+* running the gateway:
+```
+docker-compose -f compose/docker-compose-springboot-gateway.yml up
+```
+
+Once the gateway is running, you can call:
+```
+curl http://localhost:1201/census/37188
+curl http://localhost:1201/zipcode/37188
+curl http://localhost:1201/demography/37188
 ```
 
 * running the monitor:

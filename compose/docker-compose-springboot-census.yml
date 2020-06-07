@@ -1,15 +1,30 @@
 version: '3'
 
 services:
-  census:
-    container_name: tutorial-census
+  census-1:
+    container_name: tutorial-census-1
     image: census:0.0.1-SNAPSHOT
     ports:
-      - "1301:1301"
+      - "1311:1311"
     environment:
       - spring.profiles.active=consul
       - spring.cloud.consul.host=tutorial-consul-server-1
-      - PORT_EXTERNAL=1301
+      - server.port=1311
+      - PORT_EXTERNAL=1311
+    labels:      
+      - "elastic_index=springboot"
+      - "send.logs=true"
+
+  census-2:
+    container_name: tutorial-census-2
+    image: census:0.0.1-SNAPSHOT
+    ports:
+      - "1312:1312"
+    environment:
+      - spring.profiles.active=consul
+      - spring.cloud.consul.host=tutorial-consul-server-1
+      - server.port=1312
+      - PORT_EXTERNAL=1312
     labels:      
       - "elastic_index=springboot"
       - "send.logs=true"
@@ -18,11 +33,12 @@ services:
     container_name: tutorial-zipcode-1
     image: census-zipcode:0.0.1-SNAPSHOT
     ports:
-      - "14011:14011"
+      - "1411:1411"
     environment:
       - spring.profiles.active=consul
       - spring.cloud.consul.host=tutorial-consul-server-1
-      - PORT_EXTERNAL=14011
+      - server.port=1411
+      - PORT_EXTERNAL=1411
     labels:      
       - "elastic_index=springboot"
       - "send.logs=true"
@@ -31,11 +47,12 @@ services:
     container_name: tutorial-zipcode-2
     image: census-zipcode:0.0.1-SNAPSHOT
     ports:
-      - "14012:14012"
+      - "1412:1412"
     environment:
       - spring.profiles.active=consul
       - spring.cloud.consul.host=tutorial-consul-server-1
-      - PORT_EXTERNAL=14012
+      - server.port=1412
+      - PORT_EXTERNAL=1412
     labels:      
       - "elastic_index=springboot"
       - "send.logs=true"
@@ -44,11 +61,12 @@ services:
     container_name: tutorial-demography-1
     image: census-demography:0.0.1-SNAPSHOT
     ports:
-      - "14021:14021"
+      - "1421:1421"
     environment:
       - spring.profiles.active=consul
       - spring.cloud.consul.host=tutorial-consul-server-1
-      - PORT_EXTERNAL=14021
+      - server.port=1421
+      - PORT_EXTERNAL=1421
     labels:      
       - "elastic_index=springboot"
       - "send.logs=true"
@@ -57,11 +75,12 @@ services:
     container_name: tutorial-demography-2
     image: census-demography:0.0.1-SNAPSHOT
     ports:
-      - "14022:14022"
+      - "1422:1422"
     environment:
       - spring.profiles.active=consul
       - spring.cloud.consul.host=tutorial-consul-server-1
-      - PORT_EXTERNAL=14022
+      - server.port=1422
+      - PORT_EXTERNAL=1422
     labels:      
       - "elastic_index=springboot"
       - "send.logs=true"

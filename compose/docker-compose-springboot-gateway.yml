@@ -1,0 +1,45 @@
+version: '3'
+
+services:
+  redis:
+    container_name: tutorial-redis
+    image: redis
+    ports:
+      - 6379:6379
+
+  gateway-1:
+    container_name: tutorial-gateway-1
+    image: census-gateway:0.0.1-SNAPSHOT
+    ports:
+      - "1201:1201"
+    environment:
+      - spring.cloud.consul.host=tutorial-consul-server-1
+      - server.port=1201
+      - spring.redis.host=tutorial-redis
+      - PORT_EXTERNAL=1201
+    labels:      
+      - "elastic_index=springboot"
+      - "send.logs=true"
+    depends_on:
+      - redis
+
+  gateway-2:
+    container_name: tutorial-gateway-2
+    image: census-gateway:0.0.1-SNAPSHOT
+    ports:
+      - "1202:1202"
+    environment:
+      - spring.cloud.consul.host=tutorial-consul-server-1
+      - server.port=1202
+      - spring.redis.host=tutorial-redis
+      - PORT_EXTERNAL=1202
+    labels:      
+      - "elastic_index=springboot"
+      - "send.logs=true"
+    depends_on:
+      - redis
+
+networks:
+  default:
+    external:
+      name: consul-net

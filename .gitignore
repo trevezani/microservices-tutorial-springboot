@@ -152,3 +152,9 @@ services/springboot/parent/.settings/
 services/springboot/census-zipcode/.project
 services/springboot/census-demography/census-demography-infrastructure/.classpath
 services/springboot/census-demography/census-demography-infrastructure/.project
+
+services/springboot/census-gateway/.classpath
+
+services/springboot/census-gateway/.project
+
+services/springboot/census-gateway/.settings/

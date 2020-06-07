@@ -14,12 +14,6 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>net.logstash.logback</groupId>
-			<artifactId>logstash-logback-encoder</artifactId>
-			<version>${logstash.version}</version>
-		</dependency>
-
-		<dependency>
 			<groupId>io.github.resilience4j</groupId>
 			<artifactId>resilience4j-circuitbreaker</artifactId>
 			<version>1.4.0</version>

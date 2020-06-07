@@ -1,0 +1,134 @@
+spring:
+  main:
+    banner-mode: "off"
+    allow-bean-definition-overriding: true
+  
+  application:
+    name: census-gateway
+
+  profiles:
+    active: default
+
+  cloud:
+    consul:
+      host: ${CONSUL.IP:localhost}
+      port: ${CONSUL.PORT:8500}
+
+      config:
+        enabled: true      
+      
+      discovery:
+        instanceId: "${spring.application.name}:${random.int[1,999999]}"
+
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+          lowerCaseServiceId: true
+
+    loadbalancer:
+      ribbon:
+        enabled: false 
+
+  redis:
+    host: localhost
+    port: 6379
+      
+management:
+  endpoint:
+    beans:
+      enabled: true
+    health:
+      enabled: true
+    
+    metrics:
+      enabled: true
+    
+    prometheus:
+      enabled: true
+
+    loggers:
+      enabled: true
+
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+
+    tags:
+      application: ${spring.application.name}
+
+server:
+  port: 1200
+  
+logging:
+  level:
+    org.springframework.cloud.gateway: ERROR
+    reactor.netty.http.client: ERROR  
+    io.github.resilience4j: ERROR
+    org.springframework.cloud.gateway.filter.factory: ERROR
+    
+---
+spring:
+  profiles: default
+
+  cloud:
+    gateway:
+      routes:
+        - id: census-service
+          uri: lb://census
+          predicates:
+            - Path=/census/**
+          filters:
+            - RewritePath=/census/(?<path>.*), /census/$\{path}
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 10
+                redis-rate-limiter.burstCapacity: 20
+            - name: CircuitBreaker
+              args:
+                name: slowCircuitBreaker
+                fallbackUri: forward:/fallback
+        - id: census-zipcode
+          uri: lb://census-zipcode
+          predicates:
+            - Path=/zipcode/**
+          filters:
+            - RewritePath=/zipcode/(?<path>.*), /zipcode/$\{path}
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 5
+                redis-rate-limiter.burstCapacity: 10
+            - name: CircuitBreaker
+              args:
+                name: slowCircuitBreaker
+                fallbackUri: forward:/fallback
+        - id: census-demography
+          uri: lb://census-demography
+          predicates:
+            - Path=/demography/**
+          filters:
+            - RewritePath=/demography/(?<path>.*), /demography/$\{path}
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 5
+                redis-rate-limiter.burstCapacity: 10
+            - name: CircuitBreaker
+              args:
+                name: slowCircuitBreaker
+                fallbackUri: forward:/fallback
+
+---
+spring:
+  profiles: consul-config
+
+  cloud:
+    consul:
+      config:
+        format: YAML
+    

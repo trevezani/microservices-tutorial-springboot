@@ -5,3 +5,4 @@ mvn clean install -f internal-rest-http
 mvn clean package -Pconsul -f census
 mvn clean package -Pconsul -f census-zipcode
 mvn clean package -Pconsul -f census-demography
+mvn clean package census-gateway

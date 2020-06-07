@@ -5,3 +5,4 @@ mvn clean install -f internal-rest-http
 mvn clean package -f census
 mvn clean package -f census-zipcode
 mvn clean package -f census-demography
+mvn clean package -f census-gateway
