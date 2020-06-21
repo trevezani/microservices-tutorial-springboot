@@ -8,7 +8,7 @@ services:
       - 9090:9090
     volumes:
       - ./prometheus-springboot.yml:/etc/prometheus/prometheus.yml:ro
-      - ./data/prometheus:/data
+      - prometheus_data:/data
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
       - '--storage.tsdb.path=/data'
@@ -21,9 +21,18 @@ services:
     ports:
       - 3000:3000
     volumes:
-      - ./data/grafana:/var/lib/grafana
+      - grafana_data:/var/lib/grafana
     depends_on:
       - prometheus
+
+volumes:
+  grafana_data:
+    
+  prometheus_data:
+    driver_opts:
+      type: "tmpfs"
+      device: "tmpfs"
+      o: "uid=65534"
 
 networks:
   default:

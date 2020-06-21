@@ -29,6 +29,7 @@ The idea is an api gateway call the census service and this one call the others 
 mvn clean install -f services/springboot/parent
 mvn clean install -f services/springboot/internal-shared
 mvn clean install -f services/springboot/internal-rest-http
+
 mvn clean package -f services/springboot/census
 mvn clean package -f services/springboot/census-zipcode
 mvn clean package -f services/springboot/census-demography
@@ -104,6 +105,7 @@ config/census-demography/server.port = 0
 mvn clean install -f services/springboot/parent
 mvn clean install -f services/springboot/internal-shared
 mvn clean install -f services/springboot/internal-rest-http
+
 mvn clean package -f services/springboot/census-gateway
 mvn clean package -Pconsul -f services/springboot/census
 mvn clean package -Pconsul -f services/springboot/census-zipcode
@@ -144,6 +146,8 @@ curl http://localhost:1200/demography/37188
 mvn clean install -f services/springboot/parent
 mvn clean install -f services/springboot/internal-shared
 mvn clean install -f services/springboot/internal-rest-http
+
+mvn clean package -f services/springboot/census-gateway
 mvn clean package -Pconsul -f services/springboot/census
 mvn clean package -Pconsul -f services/springboot/census-zipcode
 mvn clean package -Pconsul -f services/springboot/census-demography
@@ -199,7 +203,7 @@ docker-compose -f compose/docker-compose-springboot-monitor.yml up
 
 Links: [[Prometheus]](http://localhost:9090/) [[Grafana]](http://localhost:3000/)
 
-Grafana Dashbords:
+Grafana Dashboards:
 
 [https://grafana.com/grafana/dashboards/10642](https://grafana.com/grafana/dashboards/10642)
 

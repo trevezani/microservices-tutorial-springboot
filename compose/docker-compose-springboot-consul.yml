@@ -3,9 +3,17 @@ version: '3'
 services:
   consul-server-1:
     container_name: tutorial-consul-server-1
-    image: consul:1.7.3
+    image: consul:1.8.0
     ports:
-      - "8500:8500"
+      - 8300:8300
+      - 8301:8301
+      - 8301:8301/udp
+      - 8302:8302
+      - 8302:8302/udp
+      - 8400:8400
+      - 8500:8500
+      - 8600:8600
+      - 8600:8600/udp
     environment:
       CONSUL_LOCAL_CONFIG: >-
         {
@@ -13,7 +21,7 @@ services:
           "node_name": "tutorial-consul-server-1",
           "bind_addr": "0.0.0.0",
           "client_addr": "0.0.0.0",
-          "bootstrap_expect": 1,
+          "bootstrap_expect": 3,
           "ui": true,
           "addresses" : {
             "http" : "0.0.0.0"
@@ -26,11 +34,11 @@ services:
             "enabled" : true
           }        
         }    
-    command: "agent -server -bootstrap-expect 3 -ui -client 0.0.0.0 -bind 0.0.0.0"
+    command: "agent"
     
   consul-server-2:
     container_name: tutorial-consul-server-2
-    image: consul:1.7.3
+    image: consul:1.8.0
     environment:
       CONSUL_LOCAL_CONFIG: >-
         {
@@ -45,11 +53,11 @@ services:
             "enabled" : true
           }        
         }    
-    command: "agent -server -retry-join tutorial-consul-server-1 -client 0.0.0.0 -bind 0.0.0.0"
+    command: "agent -retry-join tutorial-consul-server-1"
     
   consul-server-3:
     container_name: tutorial-consul-server-3
-    image: consul:1.7.3
+    image: consul:1.8.0
     environment:
       CONSUL_LOCAL_CONFIG: >-
         {
@@ -64,16 +72,16 @@ services:
             "enabled" : true
           }        
         }    
-    command: "agent -server -retry-join tutorial-consul-server-1 -client 0.0.0.0 -bind 0.0.0.0"
+    command: "agent -retry-join tutorial-consul-server-1"
 
   consul-agent-1:
     container_name: tutorial-consul-agent-1
-    image: consul:1.7.3
+    image: consul:1.8.0
     command: "agent -retry-join tutorial-consul-server-1 -client 0.0.0.0 -bind 0.0.0.0"
 
   consul-agent-2:
     container_name: tutorial-consul-agent-2
-    image: consul:1.7.3
+    image: consul:1.8.0
     command: "agent -retry-join tutorial-consul-server-1 -client 0.0.0.0 -bind 0.0.0.0"
 
 networks:
