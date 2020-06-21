@@ -6,7 +6,7 @@ This is a tutorial project to show many approach used with microservices.
 * [About the tutorial](#about-the-tutorial)
 * [Building, Testing and Running the springboot application](#building-testing-and-running-the-springboot-application)
 * [Building, Testing and Running the springboot application with Consul](#building-testing-and-running-the-springboot-application-with-consul)
-* [Building, Testing and Running the springboot application with Consul (docker mode)](#building-testing-and-running-the-springboot-application-with-consul-(docker-mode)]
+* [Building, Testing and Running the springboot application with Consul (docker mode)](#building-testing-and-running-the-springboot-application-with-consul-(docker-mode))
 
 ***
 
