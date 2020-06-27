@@ -81,7 +81,7 @@ docker run -d --name consul-3 -e CONSUL_BIND_INTERFACE=eth0 -p 8502:8500 consul 
 docker run -d --name consul-server-1 -p 8500:8500 consul:1.7.3 agent -server -bootstrap-expect 3 -ui -client 0.0.0.0 -bind 0.0.0.0
 
 // the join address is the adress for the first server
-docker exec -it consul-1 consul members
+docker exec -it consul-server-1 consul members
 
 docker run -d --name consul-server-2 consul:1.7.3 agent -server -retry-join 172.17.0.4 -client 0.0.0.0 -bind 0.0.0.0
 docker run -d --name consul-server-3 consul:1.7.3 agent -server -retry-join 172.17.0.4 -client 0.0.0.0 -bind 0.0.0.0
