@@ -68,29 +68,131 @@ curl http://localhost:1301/census/37188
 * running the consul for dev
 
 ```
-docker run -d --name consul-1 -p 8500:8500 -e CONSUL_BIND_INTERFACE=eth0 consul
+docker network create --driver=bridge --subnet=192.168.0.0/16 census-net
 
-// the join address is the adress for the first agent
-docker exec -it consul-1 consul members
+// Get a keygen
+docker run -it --rm --name consul_command \
+       --network=census-net \
+       consul:1.8.0 consul keygen
 
-docker run -d --name consul-2 -e CONSUL_BIND_INTERFACE=eth0 -p 8501:8500 consul agent -dev -join=172.17.0.2
-docker run -d --name consul-3 -e CONSUL_BIND_INTERFACE=eth0 -p 8502:8500 consul agent -dev -join=172.17.0.2
+// Change the encrypt information using the  generated keygen above
+docker run -it --rm --name consul-server-1 \
+       --network=census-net \
+       --ip 192.168.255.241 \
+       -p 18300:8300 \
+       -p 18301:8301 \
+       -p 18301:8301/udp \
+       -p 18302:8302 \
+       -p 18302:8302/udp \
+       -p 18400:8400 \
+       -p 18500:8500 \
+       -p 18600:8600 \
+       -p 18600:8600/udp \
+       -e 'CONSUL_LOCAL_CONFIG={"bootstrap_expect": 3, "client_addr": "0.0.0.0", "datacenter": "Us-Central", "data_dir": "/var/consul", "domain": "consul", "enable_script_checks": true, "dns_config": {"enable_truncate": true, "only_passing": true}, "encrypt": "6uZf92Qa7dFgGnQ1zh8Hn0MwnRh1bRAOlE481Mv4+cU=", "leave_on_terminate": true, "log_level": "INFO", "rejoin_after_leave": true, "server": true, "telemetry": {"prometheus_retention_time": "24h", "disable_hostname": true}, "start_join": ["192.168.255.241","192.168.255.242","192.168.255.243"], "ui": true}' \
+       consul:1.8.0 agent
+
+docker run -it --rm --name consul-server-2 \
+       --network=census-net \
+       --ip 192.168.255.242 \
+       -p 28300:8300 \
+       -p 28301:8301 \
+       -p 28301:8301/udp \
+       -p 28302:8302 \
+       -p 28302:8302/udp \
+       -p 28400:8400 \
+       -p 28500:8500 \
+       -p 28600:8600 \
+       -p 28600:8600/udp \
+       -e 'CONSUL_LOCAL_CONFIG={"bootstrap_expect": 3, "client_addr": "0.0.0.0", "datacenter": "Us-Central", "data_dir": "/var/consul", "domain": "consul", "enable_script_checks": true, "dns_config": {"enable_truncate": true, "only_passing": true}, "encrypt": "6uZf92Qa7dFgGnQ1zh8Hn0MwnRh1bRAOlE481Mv4+cU=", "leave_on_terminate": true, "log_level": "INFO", "rejoin_after_leave": true, "server": true, "telemetry": {"prometheus_retention_time": "24h", "disable_hostname": true}, "start_join": ["192.168.255.241","192.168.255.242","192.168.255.243"], "ui": true}' \
+       consul:1.8.0 agent
+
+docker run -it --rm --name consul-server-3 \
+       --network=census-net \
+       --ip 192.168.255.243 \
+       -p 38300:8300 \
+       -p 38301:8301 \
+       -p 38301:8301/udp \
+       -p 38302:8302 \
+       -p 38302:8302/udp \
+       -p 38400:8400 \
+       -p 38500:8500 \
+       -p 38600:8600 \
+       -p 38600:8600/udp \
+       -e 'CONSUL_LOCAL_CONFIG={"bootstrap_expect": 3, "client_addr": "0.0.0.0", "datacenter": "Us-Central", "data_dir": "/var/consul", "domain": "consul", "enable_script_checks": true, "dns_config": {"enable_truncate": true, "only_passing": true}, "encrypt": "6uZf92Qa7dFgGnQ1zh8Hn0MwnRh1bRAOlE481Mv4+cU=", "leave_on_terminate": true, "log_level": "INFO", "rejoin_after_leave": true, "server": true, "telemetry": {"prometheus_retention_time": "24h", "disable_hostname": true}, "start_join": ["192.168.255.241","192.168.255.242","192.168.255.243"], "ui": true}' \
+       consul:1.8.0 agent
+
+docker run -it --rm --name consul-agent-1 \
+       --network=census-net \
+       --ip 192.168.255.244 \
+       -e 'CONSUL_LOCAL_CONFIG={"server": false, "datacenter": "Us-Central", "data_dir": "/var/consul", "encrypt": "6uZf92Qa7dFgGnQ1zh8Hn0MwnRh1bRAOlE481Mv4+cU=","log_level": "INFO", "leave_on_terminate": true, "start_join": ["192.168.255.242"]}' \
+       consul:1.8.0 agent
+
+docker run -it --rm --name consul-agent-2 \
+       --network=census-net \
+       --ip 192.168.255.245 \
+       -e 'CONSUL_LOCAL_CONFIG={"server": false, "datacenter": "Us-Central", "data_dir": "/var/consul", "encrypt": "6uZf92Qa7dFgGnQ1zh8Hn0MwnRh1bRAOlE481Mv4+cU=","log_level": "INFO", "leave_on_terminate": true, "start_join": ["192.168.255.243"]}' \
+       consul:1.8.0 agent
 ```
-* running the consul (another option)
-```
-docker run -d --name consul-server-1 -p 8500:8500 consul:1.7.3 agent -server -bootstrap-expect 3 -ui -client 0.0.0.0 -bind 0.0.0.0
 
-// the join address is the adress for the first server
+Below the json used in the consul setup:
+
+```
+//Server
+{
+    "bootstrap_expect": 3,
+    "client_addr": "0.0.0.0",
+    "datacenter": "Us-Central",
+    "data_dir": "/var/consul",
+    "domain": "consul",
+    "enable_script_checks": true,
+    "dns_config": {
+        "enable_truncate": true,
+        "only_passing": true
+    },
+    "encrypt": "6uZf92Qa7dFgGnQ1zh8Hn0MwnRh1bRAOlE481Mv4+cU=",
+    "leave_on_terminate": true,
+    "log_level": "INFO",
+    "rejoin_after_leave": true,
+    "server": true,
+    "telemetry": {
+        "prometheus_retention_time": "24h",
+        "disable_hostname": true
+    },                
+    "start_join": [
+        "192.168.255.241",
+        "192.168.255.242",
+        "192.168.255.243"
+    ],
+    "ui": true
+}
+
+// Agent
+{
+    "server": false,
+    "datacenter": "Us-Central",
+    "data_dir": "/var/consul",
+    "encrypt": "6uZf92Qa7dFgGnQ1zh8Hn0MwnRh1bRAOlE481Mv4+cU=",
+    "log_level": "INFO",
+    "leave_on_terminate": true,
+    "start_join": [
+        "192.168.255.242"
+    ]
+}
+```
+
+If you want see the consul cluster use this command:
+
+```
 docker exec -it consul-server-1 consul members
-
-docker run -d --name consul-server-2 consul:1.7.3 agent -server -retry-join 172.17.0.4 -client 0.0.0.0 -bind 0.0.0.0
-docker run -d --name consul-server-3 consul:1.7.3 agent -server -retry-join 172.17.0.4 -client 0.0.0.0 -bind 0.0.0.0
-
-docker run -d --name consul-client-1 consul:1.7.3 agent -retry-join 172.17.0.4 -client 0.0.0.0 -bind 0.0.0.0
-docker run -d --name consul-client-2 consul:1.7.3 agent -retry-join 172.17.0.4 -client 0.0.0.0 -bind 0.0.0.0
 ```
 
-Link: [http://localhost:8500/ui](http://localhost:8500/ui)
+To remove a service from the consul use this command:
+
+```
+docker exec -it consul-server-1 consul services deregister -id=census-zipcode-734475
+```
+
+Link: [http://localhost:8500/ui](http://localhost:18500/ui)
 
 Inside the link, create the key/value below:
 
@@ -123,10 +225,10 @@ mvn clean verify -f services/springboot/census
 ```
 * running the microservices (from the jar, after having built it):
 ```
-java -Dspring.cloud.consul.host=[local IP] -jar census-gateway/target/census-gateway.jar
-java -Dspring.profiles.active=consul -Dspring.cloud.consul.host=[local IP] -jar census/census-infrastructure/target/census.jar
-java -Dspring.profiles.active=consul -Dspring.cloud.consul.host=[local IP] -jar census-zipcode/census-zipcode-infrastructure/target/census-zipcode.jar
-java -Dspring.profiles.active=consul -Dspring.cloud.consul.host=[local IP] -jar census-demography/census-demography-infrastructure/target/census-demography.jar
+java -Dspring.cloud.consul.host=[local IP] -Dspring.cloud.consul.port=18500 -jar census-gateway/target/census-gateway.jar
+java -Dspring.profiles.active=consul -Dspring.cloud.consul.host=[local IP] -Dspring.cloud.consul.port=18500 -jar census/census-infrastructure/target/census.jar
+java -Dspring.profiles.active=consul -Dspring.cloud.consul.host=[local IP] -Dspring.cloud.consul.port=18500 -jar census-zipcode/census-zipcode-infrastructure/target/census-zipcode.jar
+java -Dspring.profiles.active=consul -Dspring.cloud.consul.host=[local IP] -Dspring.cloud.consul.port=18500 -jar census-demography/census-demography-infrastructure/target/census-demography.jar
 ```
 
 Once the microservices are running, you can call:

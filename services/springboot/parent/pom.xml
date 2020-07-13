@@ -20,6 +20,8 @@
 		<spring-cloud.version>Hoxton.SR4</spring-cloud.version>
 		<csvjdbc.version>1.0.28</csvjdbc.version>
 		<logstash.version>6.4</logstash.version>
+		<spring-cloud-starter-consul-all.version>2.2.3.RELEASE</spring-cloud-starter-consul-all.version>
+		<consul-api.version>1.4.5</consul-api.version>
 	</properties>
 
 	<dependencies>
@@ -149,7 +151,7 @@
 				<dependency>
 					<groupId>org.springframework.cloud</groupId>
 					<artifactId>spring-cloud-starter-consul-all</artifactId>
-					<version>2.2.3.RELEASE</version>
+					<version>${spring-cloud-starter-consul-all.version}</version>
 					<exclusions>
 						<exclusion>
 							<groupId>org.springframework.cloud</groupId>
@@ -160,6 +162,16 @@
 							<artifactId>spring-cloud-starter-netflix-ribbon</artifactId>
 						</exclusion>
 					</exclusions>
+				</dependency>
+				<dependency>
+					<groupId>com.ecwid.consul</groupId>
+					<artifactId>consul-api</artifactId>
+					<version>${consul-api.version}</version>
+				</dependency>
+				<dependency>
+					<groupId>br.com.trevezani.tutorial.internal</groupId>
+					<artifactId>internal-consul-utils</artifactId>
+					<version>0.0.1-SNAPSHOT</version>
 				</dependency>
 			</dependencies>
 		</profile>

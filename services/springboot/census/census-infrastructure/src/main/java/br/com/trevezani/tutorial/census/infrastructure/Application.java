@@ -8,7 +8,7 @@ import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
 @EnableAutoConfiguration(exclude = ErrorMvcAutoConfiguration.class)
-@ComponentScan("br.com.trevezani.tutorial.census")
+@ComponentScan("br.com.trevezani.tutorial")
 public class Application {
 
 	public static void main(String[] args) {

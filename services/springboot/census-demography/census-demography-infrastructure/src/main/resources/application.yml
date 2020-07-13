@@ -56,7 +56,16 @@ spring:
       port: ${CONSUL.PORT:8500}
       
       discovery:
-        instanceId: "${spring.application.name}:${random.int[1,999999]}"
+        prefer-ip-address:  true
 
+        deregister: false
+        health-check-critical-timeout: 1m
+      
+        instanceId: "${spring.application.name}:${random.int[1,999999]}"
+        healthCheckInterval: 15s
+
+        heartbeat:
+          enabled: true
+                        
       config:
-        enabled: true      
+        enabled: true    

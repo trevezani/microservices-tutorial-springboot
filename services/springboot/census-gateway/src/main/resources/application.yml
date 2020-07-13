@@ -18,7 +18,16 @@ spring:
         enabled: true      
       
       discovery:
+        prefer-ip-address:  true
+
+        deregister: false
+        health-check-critical-timeout: 1m
+      
         instanceId: "${spring.application.name}:${random.int[1,999999]}"
+        healthCheckInterval: 15s
+
+        heartbeat:
+          enabled: true
 
     gateway:
       discovery:

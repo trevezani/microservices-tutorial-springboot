@@ -158,3 +158,9 @@ services/springboot/census-gateway/.classpath
 services/springboot/census-gateway/.project
 
 services/springboot/census-gateway/.settings/
+
+services/springboot/internal-consul-utils/.classpath
+
+services/springboot/internal-consul-utils/.project
+
+services/springboot/internal-consul-utils/.settings/
