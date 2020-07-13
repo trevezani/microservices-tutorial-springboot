@@ -1,4 +1,4 @@
-# Microservices Tutorial (Under Construction)
+# Microservices Tutorial Springboot (Under Construction)
 
 This is a tutorial project to show many approach used with microservices.
 
@@ -189,7 +189,7 @@ docker exec -it consul-server-1 consul members
 To remove a service from the consul use this command:
 
 ```
-docker exec -it consul-server-1 consul services deregister -id=census-zipcode-734475
+docker exec -it consul-server-1 consul services deregister -id=<service id> // example census-zipcode-734475
 ```
 
 Link: [http://localhost:8500/ui](http://localhost:18500/ui)
