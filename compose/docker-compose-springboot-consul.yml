@@ -5,86 +5,186 @@ services:
     container_name: tutorial-consul-server-1
     image: consul:1.8.0
     ports:
-      - 8300:8300
-      - 8301:8301
-      - 8301:8301/udp
-      - 8302:8302
-      - 8302:8302/udp
-      - 8400:8400
-      - 8500:8500
-      - 8600:8600
-      - 8600:8600/udp
+      - 18300:8300
+      - 18301:8301
+      - 18301:8301/udp
+      - 18302:8302
+      - 18302:8302/udp
+      - 18400:8400
+      - 18500:8500
+      - 18600:8600
+      - 18600:8600/udp
+    networks:
+        default:
+            ipv4_address: 192.168.255.241
     environment:
       CONSUL_LOCAL_CONFIG: >-
         {
-          "server": true,
-          "node_name": "tutorial-consul-server-1",
-          "bind_addr": "0.0.0.0",
-          "client_addr": "0.0.0.0",
           "bootstrap_expect": 3,
-          "ui": true,
-          "addresses" : {
-            "http" : "0.0.0.0"
+          "client_addr": "0.0.0.0",
+          "datacenter": "Us-Central",
+          "data_dir": "/var/consul",
+          "domain": "consul",
+          "enable_script_checks": true,
+          "dns_config": {
+              "enable_truncate": true,
+              "only_passing": true
           },
+          "encrypt": "6uZf92Qa7dFgGnQ1zh8Hn0MwnRh1bRAOlE481Mv4+cU=",
+          "leave_on_terminate": true,
+          "log_level": "INFO",
+          "rejoin_after_leave": true,
+          "server": true,
           "telemetry": {
-            "prometheus_retention_time": "24h",
-            "disable_hostname": true
-          },
-          "connect" : {
-            "enabled" : true
-          }        
-        }    
+              "prometheus_retention_time": "24h",
+              "disable_hostname": true
+          },                
+          "start_join": [
+              "192.168.255.241",
+              "192.168.255.242",
+              "192.168.255.243"
+          ],
+          "ui": true
+        }
     command: "agent"
     
   consul-server-2:
     container_name: tutorial-consul-server-2
     image: consul:1.8.0
+    ports:
+      - 28300:8300
+      - 28301:8301
+      - 28301:8301/udp
+      - 28302:8302
+      - 28302:8302/udp
+      - 28400:8400
+      - 28500:8500
+      - 28600:8600
+      - 28600:8600/udp
+    networks:
+        default:
+            ipv4_address: 192.168.255.242
     environment:
       CONSUL_LOCAL_CONFIG: >-
         {
-          "server": true,
-          "node_name": "tutorial-consul-server-2",
-          "bind_addr": "0.0.0.0",
+          "bootstrap_expect": 3,
           "client_addr": "0.0.0.0",
-          "addresses" : {
-            "http" : "0.0.0.0"
+          "datacenter": "Us-Central",
+          "data_dir": "/var/consul",
+          "domain": "consul",
+          "enable_script_checks": true,
+          "dns_config": {
+              "enable_truncate": true,
+              "only_passing": true
           },
-          "connect" : {
-            "enabled" : true
-          }        
+          "encrypt": "6uZf92Qa7dFgGnQ1zh8Hn0MwnRh1bRAOlE481Mv4+cU=",
+          "leave_on_terminate": true,
+          "log_level": "INFO",
+          "rejoin_after_leave": true,
+          "server": true,
+          "telemetry": {
+              "prometheus_retention_time": "24h",
+              "disable_hostname": true
+          },                
+          "start_join": [
+              "192.168.255.241",
+              "192.168.255.242",
+              "192.168.255.243"
+          ],
+          "ui": true
         }    
-    command: "agent -retry-join tutorial-consul-server-1"
+    command: "agent"
     
   consul-server-3:
     container_name: tutorial-consul-server-3
     image: consul:1.8.0
+    ports:
+      - 38300:8300
+      - 38301:8301
+      - 38301:8301/udp
+      - 38302:8302
+      - 38302:8302/udp
+      - 38400:8400
+      - 38500:8500
+      - 38600:8600
+      - 38600:8600/udp
+    networks:
+        default:
+            ipv4_address: 192.168.255.243
     environment:
       CONSUL_LOCAL_CONFIG: >-
         {
-          "server": true,
-          "node_name": "tutorial-consul-server-3",
-          "bind_addr": "0.0.0.0",
+          "bootstrap_expect": 3,
           "client_addr": "0.0.0.0",
-          "addresses" : {
-            "http" : "0.0.0.0"
+          "datacenter": "Us-Central",
+          "data_dir": "/var/consul",
+          "domain": "consul",
+          "enable_script_checks": true,
+          "dns_config": {
+              "enable_truncate": true,
+              "only_passing": true
           },
-          "connect" : {
-            "enabled" : true
-          }        
+          "encrypt": "6uZf92Qa7dFgGnQ1zh8Hn0MwnRh1bRAOlE481Mv4+cU=",
+          "leave_on_terminate": true,
+          "log_level": "INFO",
+          "rejoin_after_leave": true,
+          "server": true,
+          "telemetry": {
+              "prometheus_retention_time": "24h",
+              "disable_hostname": true
+          },                
+          "start_join": [
+              "192.168.255.241",
+              "192.168.255.242",
+              "192.168.255.243"
+          ],
+          "ui": true
         }    
-    command: "agent -retry-join tutorial-consul-server-1"
+    command: "agent"
 
   consul-agent-1:
     container_name: tutorial-consul-agent-1
     image: consul:1.8.0
-    command: "agent -retry-join tutorial-consul-server-1 -client 0.0.0.0 -bind 0.0.0.0"
+    networks:
+        default:
+            ipv4_address: 192.168.255.244
+    environment:
+      CONSUL_LOCAL_CONFIG: >-
+        {
+          "server": false,
+          "datacenter": "Us-Central",
+          "data_dir": "/var/consul",
+          "encrypt": "6uZf92Qa7dFgGnQ1zh8Hn0MwnRh1bRAOlE481Mv4+cU=",
+          "log_level": "INFO",
+          "leave_on_terminate": true,
+          "start_join": [
+              "192.168.255.242"
+          ]
+        }    
+    command: "agent"
 
   consul-agent-2:
     container_name: tutorial-consul-agent-2
     image: consul:1.8.0
-    command: "agent -retry-join tutorial-consul-server-1 -client 0.0.0.0 -bind 0.0.0.0"
+    networks:
+        default:
+            ipv4_address: 192.168.255.245
+    environment:
+      CONSUL_LOCAL_CONFIG: >-
+        {
+          "server": false,
+          "datacenter": "Us-Central",
+          "data_dir": "/var/consul",
+          "encrypt": "6uZf92Qa7dFgGnQ1zh8Hn0MwnRh1bRAOlE481Mv4+cU=",
+          "log_level": "INFO",
+          "leave_on_terminate": true,
+          "start_join": [
+              "192.168.255.243"
+          ]
+        }    
+    command: "agent"
 
 networks:
   default:
     external:
-      name: consul-net
+      name: census-net

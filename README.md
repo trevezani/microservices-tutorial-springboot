@@ -264,7 +264,7 @@ or execute the bash `buildDocker.sh` inside the directory `services/springboot`
 
 * running the consul:
 ```
-docker network create -d bridge consul-net
+docker network create --driver=bridge --subnet=192.168.0.0/16 census-net
 
 docker-compose -f compose/docker-compose-springboot-consul.yml up
 ```

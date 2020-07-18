@@ -88,4 +88,4 @@ services:
 networks:
   default:
     external:
-      name: consul-net
+      name: census-net
