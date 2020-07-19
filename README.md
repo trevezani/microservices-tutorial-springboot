@@ -7,6 +7,7 @@ This is a tutorial project to show many approach used with microservices.
 * [Building, Testing and Running the springboot application](#building-testing-and-running-the-springboot-application)
 * [Building, Testing and Running the springboot application with Consul](#building-testing-and-running-the-springboot-application-with-consul)
 * [Building, Testing and Running the springboot application with Consul (docker mode)](#building-testing-and-running-the-springboot-application-with-consul-docker-mode)
+* [Building, Testing and Running the springboot application with Consul and Kong (docker mode)](#building-testing-and-running-the-springboot-application-with-consul-and-kong-docker-mode)
 
 ***
 
@@ -311,6 +312,200 @@ Grafana Dashboards:
 [https://grafana.com/grafana/dashboards/10642](https://grafana.com/grafana/dashboards/10642)
 
 [https://grafana.com/grafana/dashboards/4701](https://grafana.com/grafana/dashboards/4701)
+
+* running the logging:
+```
+docker-compose -f compose/docker-compose-springboot-logging.yml up
+```
+
+Link: [http://localhost:5601/](http://localhost:5601/)
+
+* checking the memory
+```
+docker stats $(docker ps --format={{.Names}})
+```
+
+***
+
+## Building, Testing and Running the springboot application with Consul and Kong (docker mode)
+
+* building the microservices:
+```
+mvn clean install -f services/springboot/parent
+mvn clean install -f services/springboot/internal-shared
+mvn clean install -f services/springboot/internal-rest-http
+
+mvn clean package -f services/springboot/census-gateway
+mvn clean package -Pconsul -f services/springboot/census
+mvn clean package -Pconsul -f services/springboot/census-zipcode
+mvn clean package -Pconsul -f services/springboot/census-demography
+
+mvn docker:build -f services/springboot/census/census-infrastructure
+mvn docker:build -f services/springboot/census-zipcode/census-zipcode-infrastructure
+mvn docker:build -f services/springboot/census-demography/census-demography-infrastructure
+```
+
+or execute the bash `buildDocker.sh` inside the directory `services/springboot`
+
+* running the consul:
+```
+docker network create --driver=bridge --subnet=192.168.0.0/16 census-net
+
+docker-compose -f compose/docker-compose-springboot-consul.yml up
+```
+
+Link: [http://localhost:8500/ui](http://localhost:8500/ui)
+
+Inside the link, create the key/value below:
+
+```
+config/census/censusdemography.api.url = http://census-demography
+config/census/censuszipcode.api.url = http://census-zipcode
+```
+* running the microservices:
+```
+docker-compose -f compose/docker-compose-springboot-census.yml up
+```
+
+Once the microservices are running, you can call:
+```
+curl http://localhost:1311/census/37188
+```
+
+* preparing the kong environment:
+```
+docker run -d --name kong-database \
+       --network=census-net \
+       --ip=192.168.255.249 \
+       -p 5432:5432 \
+       -e "POSTGRES_USER=kong" \
+       -e "POSTGRES_DB=kong" \
+       -e "POSTGRES_PASSWORD=k0ngc0nsvl" \
+       postgres:9.6 
+
+docker run --rm -it \
+       --network=census-net \
+       -e "KONG_DATABASE=postgres" \
+       -e "KONG_PG_HOST=kong-database" \
+       -e "KONG_PG_PASSWORD=k0ngc0nsvl" \
+       kong:2.0.4 kong migrations bootstrap
+
+docker run --rm -it \
+       --network=census-net \
+       pantsel/konga -c prepare -a postgres -u postgresql://kong:k0ngc0nsvl@kong-database:5432/konga_db       
+```
+
+* running the gateway kong and kong admin:
+```
+docker-compose -f compose/docker-compose-springboot-kong.yml up
+```
+
+Kong Admin: [http://localhost:1337](http://localhost:1337)
+
+`Kong Admin URL: http://tutorial-kong:8001`
+
+* adding the kong rules:
+```
+-- ZipCode
+curl -X POST http://localhost:8001/upstreams \
+     --data "name=censuszipcode.upstream" \
+     --data 'healthchecks.active.healthy.interval=5' \
+     --data 'healthchecks.active.unhealthy.interval=5' \
+     --data 'healthchecks.active.unhealthy.http_failures=5' \
+     --data 'healthchecks.active.healthy.successes=5'     
+
+curl -X POST http://localhost:8001/upstreams/censuszipcode.upstream/targets \
+     --data "target=census-zipcode.service.consul:1411" \
+     --data "weight=100"
+curl -X POST http://localhost:8001/upstreams/censuszipcode.upstream/targets \
+     --data "target=census-zipcode.service.consul:1412" \
+     --data "weight=100"
+
+curl -X POST http://localhost:8001/services/ \
+     --data "name=censuszipcode.service" \
+     --data "host=censuszipcode.upstream" \
+     --data "path=/zipcode"
+
+curl -X POST http://localhost:8001/services/censuszipcode.service/routes/ \
+     --data "paths[]=/(?i)zipcode"
+
+curl -X POST http://localhost:8001/services/censuszipcode.service/plugins \
+     --data "name=prometheus" 
+
+-- Demography
+curl -X POST http://localhost:8001/upstreams \
+     --data "name=censusdemography.upstream" \
+     --data 'healthchecks.active.healthy.interval=5' \
+     --data 'healthchecks.active.unhealthy.interval=5' \
+     --data 'healthchecks.active.unhealthy.http_failures=5' \
+     --data 'healthchecks.active.healthy.successes=5'     
+
+curl -X POST http://localhost:8001/upstreams/censusdemography.upstream/targets \
+     --data "target=census-demography.service.consul:1421" \
+     --data "weight=100"
+curl -X POST http://localhost:8001/upstreams/censusdemography.upstream/targets \
+     --data "target=census-demography.service.consul:1422" \
+     --data "weight=100"
+
+curl -X POST http://localhost:8001/services/ \
+     --data "name=censusdemography.service" \
+     --data "host=censusdemography.upstream" \
+     --data "path=/demography"
+
+curl -X POST http://localhost:8001/services/censusdemography.service/routes/ \
+     --data "paths[]=/(?i)demography"
+
+curl -X POST http://localhost:8001/services/censusdemography.service/plugins \
+     --data "name=prometheus" 
+
+-- Census
+curl -X POST http://localhost:8001/upstreams \
+     --data "name=census.upstream" \
+     --data 'healthchecks.active.healthy.interval=5' \
+     --data 'healthchecks.active.unhealthy.interval=5' \
+     --data 'healthchecks.active.unhealthy.http_failures=5' \
+     --data 'healthchecks.active.healthy.successes=5'     
+
+curl -X POST http://localhost:8001/upstreams/census.upstream/targets \
+     --data "target=census.service.consul:1311" \
+     --data "weight=100"
+curl -X POST http://localhost:8001/upstreams/census.upstream/targets \
+     --data "target=census.service.consul:1312" \
+     --data "weight=100"
+
+curl -X POST http://localhost:8001/services/ \
+     --data "name=census.service" \
+     --data "host=census.upstream" \
+     --data "path=/census"
+
+curl -X POST http://localhost:8001/services/census.service/routes/ \
+     --data "paths[]=/(?i)census"
+
+curl -X POST http://localhost:8001/services/census.service/plugins \
+     --data "name=prometheus" 
+```
+
+Once the gateway is running, you can call:
+```
+curl http://localhost:8000/census/37188
+curl http://localhost:8000/zipcode/37188
+curl http://localhost:8000/demography/37188
+```
+
+* running the monitor:
+```
+docker-compose -f compose/docker-compose-springboot-monitor-kong.yml up
+```
+
+Links: [[Prometheus]](http://localhost:9090/) [[Grafana]](http://localhost:3000/)
+
+Grafana Dashboards:
+
+[https://grafana.com/grafana/dashboards/10642](https://grafana.com/grafana/dashboards/10642)
+
+[https://grafana.com/grafana/dashboards/4701](https://grafana.com/grafana/dashboards/4701)
+
+[https://grafana.com/grafana/dashboards/7424](https://grafana.com/grafana/dashboards/7424)
 
 * running the logging:
 ```

@@ -1,0 +1,40 @@
+version: '3'
+
+services:
+  prometheus:
+    container_name: tutorial-prometheus
+    image: prom/prometheus
+    ports:
+      - 9090:9090
+    volumes:
+      - ./prometheus-springboot-kong.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/data
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/data'
+      - '--storage.tsdb.retention.time=74h'
+      - '--web.enable-lifecycle'
+
+  grafana:
+    container_name: tutorial-grafana
+    image: grafana/grafana
+    ports:
+      - 3000:3000
+    volumes:
+      - grafana_data:/var/lib/grafana
+    depends_on:
+      - prometheus
+
+volumes:
+  grafana_data:
+    
+  prometheus_data:
+    driver_opts:
+      type: "tmpfs"
+      device: "tmpfs"
+      o: "uid=65534"
+      
+networks:
+  default:
+    external:
+      name: census-net

@@ -4,6 +4,7 @@ services:
   consul-server-1:
     container_name: tutorial-consul-server-1
     image: consul:1.8.0
+    restart: always
     ports:
       - 18300:8300
       - 18301:8301
@@ -51,6 +52,7 @@ services:
   consul-server-2:
     container_name: tutorial-consul-server-2
     image: consul:1.8.0
+    restart: always
     ports:
       - 28300:8300
       - 28301:8301
@@ -98,6 +100,7 @@ services:
   consul-server-3:
     container_name: tutorial-consul-server-3
     image: consul:1.8.0
+    restart: always
     ports:
       - 38300:8300
       - 38301:8301
@@ -145,6 +148,7 @@ services:
   consul-agent-1:
     container_name: tutorial-consul-agent-1
     image: consul:1.8.0
+    restart: always
     networks:
         default:
             ipv4_address: 192.168.255.244
@@ -166,6 +170,7 @@ services:
   consul-agent-2:
     container_name: tutorial-consul-agent-2
     image: consul:1.8.0
+    restart: always
     networks:
         default:
             ipv4_address: 192.168.255.245

@@ -1,0 +1,34 @@
+global:
+  scrape_interval:     15s
+  evaluation_interval: 15s
+      
+scrape_configs:
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['tutorial-prometheus:9090']
+      
+  - job_name: 'consul'
+    static_configs:
+      - targets: ['tutorial-consul-server-1:8500']
+    metrics_path: '/v1/agent/metrics'
+    params:
+      format: ['prometheus']
+  
+  - job_name: 'kong'
+    static_configs:
+      - targets: ['kong:8001']
+    metrics_path: '/metrics'
+
+  - job_name: 'services'
+    consul_sd_configs:
+      - server: 'tutorial-consul-server-1:8500'
+        services: []
+    relabel_configs:
+      - source_labels: ['__meta_consul_service_id']
+        regex: '.*[^(consul)].*'
+        action: keep   
+      - source_labels: ['__meta_consul_service']
+        regex:         '(.*)'
+        target_label:  'service'
+        replacement:   '$1'        
+    metrics_path: /actuator/prometheus
