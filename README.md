@@ -6,8 +6,9 @@ This is a tutorial project to show many approach used with microservices.
 * [About the tutorial](#about-the-tutorial)
 * [Building, Testing and Running the springboot application](#building-testing-and-running-the-springboot-application)
 * [Building, Testing and Running the springboot application with Consul](#building-testing-and-running-the-springboot-application-with-consul)
-* [Building, Testing and Running the springboot application with Consul (docker mode)](#building-testing-and-running-the-springboot-application-with-consul-docker-mode)
-* [Building, Testing and Running the springboot application with Consul and Kong (docker mode)](#building-testing-and-running-the-springboot-application-with-consul-and-kong-docker-mode)
+* [Building the images](#building-the-images)
+* [Running the springboot application with Consul (docker mode)](#building-testing-and-running-the-springboot-application-with-consul-docker-mode)
+* [Running the springboot application with Consul and Kong (docker mode)](#building-testing-and-running-the-springboot-application-with-consul-and-kong-docker-mode)
 
 ***
 
@@ -243,7 +244,7 @@ curl http://localhost:1200/demography/37188
 
 ***
 
-## Building, Testing and Running the springboot application with Consul (docker mode)
+## Building the images
 
 * building the microservices:
 ```
@@ -262,6 +263,10 @@ mvn docker:build -f services/springboot/census-demography/census-demography-infr
 ```
 
 or execute the bash `buildDocker.sh` inside the directory `services/springboot`
+
+***
+
+## Running the springboot application with Consul (docker mode)
 
 * running the consul:
 ```
@@ -327,25 +332,7 @@ docker stats $(docker ps --format={{.Names}})
 
 ***
 
-## Building, Testing and Running the springboot application with Consul and Kong (docker mode)
-
-* building the microservices:
-```
-mvn clean install -f services/springboot/parent
-mvn clean install -f services/springboot/internal-shared
-mvn clean install -f services/springboot/internal-rest-http
-
-mvn clean package -f services/springboot/census-gateway
-mvn clean package -Pconsul -f services/springboot/census
-mvn clean package -Pconsul -f services/springboot/census-zipcode
-mvn clean package -Pconsul -f services/springboot/census-demography
-
-mvn docker:build -f services/springboot/census/census-infrastructure
-mvn docker:build -f services/springboot/census-zipcode/census-zipcode-infrastructure
-mvn docker:build -f services/springboot/census-demography/census-demography-infrastructure
-```
-
-or execute the bash `buildDocker.sh` inside the directory `services/springboot`
+## Running the springboot application with Consul and Kong (docker mode)
 
 * running the consul:
 ```
