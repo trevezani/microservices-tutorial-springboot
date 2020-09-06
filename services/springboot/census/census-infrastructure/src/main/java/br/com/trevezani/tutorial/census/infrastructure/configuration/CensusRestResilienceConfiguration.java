@@ -39,10 +39,10 @@ public class CensusRestResilienceConfiguration {
 	@Value("${spring.profiles.active}")
 	private String activeProfile;
 	
-	@Value("${censusdemography.api.url:http://censusdemography:8080}")
+	@Value("${censusdemography.api.url:http://census-demography:8080}")
 	private String censusdemographyURL;
 
-	@Value("${censuszipcode.api.url:http://censuszipcode:8080}")
+	@Value("${censuszipcode.api.url:http://census-zipcode:8080}")
 	private String censuszipcodeURL;
 
 	@Autowired
