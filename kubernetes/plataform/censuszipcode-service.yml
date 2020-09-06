@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: census-zipcode
+  namespace: census
+  labels:
+    app: census-zipcode
+spec:
+  ports:
+    - name: http
+      port: 8080
+  selector:
+    app: census-zipcode

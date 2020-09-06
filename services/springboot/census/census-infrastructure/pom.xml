@@ -61,7 +61,7 @@
 						<image>
 							<name>${project.parent.artifactId}:${project.version}</name>
 							<build>
-								<dockerFile>${project.basedir}/Dockerfile</dockerFile>
+								<dockerFile>${project.basedir}/${dockerfileName}</dockerFile>
 							</build>
 						</image>
 					</images>

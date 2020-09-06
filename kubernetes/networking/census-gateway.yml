@@ -1,0 +1,53 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: census-gateway
+  namespace: census
+spec:
+  selector:
+    istio: ingressgateway # use istio default controller
+  servers:
+    - port:
+        number: 80
+        name: http
+        protocol: HTTP
+      hosts:
+        - "*"
+
+---
+
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: census-virtualservice
+  namespace: census
+spec:
+  hosts:
+    - "*"
+  gateways:
+    - census-gateway
+  http:
+    - match:
+        - uri:
+            prefix: /zipcode
+      route:
+        - destination:
+            host: census-zipcode
+            port:
+              number: 8080
+    - match:
+        - uri:
+            prefix: /demography
+      route:
+        - destination:
+            host: census-demography
+            port:
+              number: 8080  
+    - match:
+        - uri:
+            prefix: /census
+      route:
+        - destination:
+            host: census
+            port:
+              number: 8080

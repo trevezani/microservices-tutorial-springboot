@@ -7,8 +7,9 @@ This is a tutorial project to show many approach used with microservices.
 * [Building, Testing and Running the springboot application](#building-testing-and-running-the-springboot-application)
 * [Building, Testing and Running the springboot application with Consul](#building-testing-and-running-the-springboot-application-with-consul)
 * [Building the images](#building-the-images)
-* [Running the springboot application with Consul (docker mode)](#building-testing-and-running-the-springboot-application-with-consul-docker-mode)
-* [Running the springboot application with Consul and Kong (docker mode)](#building-testing-and-running-the-springboot-application-with-consul-and-kong-docker-mode)
+* [Running the springboot application with Consul (docker mode)](#running-the-springboot-application-with-consul-docker-mode)
+* [Running the springboot application with Consul and Kong (docker mode)](#running-the-springboot-application-with-consul-and-kong-docker-mode)
+* [Building and Running the springboot application in Kubernetes with Istio](#building-and-running-the-springboot-application-in-kubernetes-with-istio)
 
 ***
 
@@ -210,6 +211,7 @@ config/census-demography/server.port = 0
 mvn clean install -f services/springboot/parent
 mvn clean install -f services/springboot/internal-shared
 mvn clean install -f services/springboot/internal-rest-http
+mvn clean install -f services/springboot/internal-consul-utils
 
 mvn clean package -f services/springboot/census-gateway
 mvn clean package -Pconsul -f services/springboot/census
@@ -504,4 +506,113 @@ Link: [http://localhost:5601/](http://localhost:5601/)
 * checking the memory
 ```
 docker stats $(docker ps --format={{.Names}})
+```
+
+***
+
+## Building and Running the springboot application in Kubernetes with Istio
+
+* preparing the docker registry
+
+```
+mkdir -p /opt/docker/auth
+
+docker run --rm --entrypoint htpasswd registry:2 -Bbn admin admin > /opt/docker/auth/htpasswd
+
+docker run -d -p 5000:5000 --restart=always --name registry \
+     -e REGISTRY_STORAGE_DELETE_ENABLED=true \
+     -v /opt/docker/auth:/auth \
+     -e "REGISTRY_AUTH=htpasswd" \
+     -e "REGISTRY_AUTH_HTPASSWD_REALM=Registry Realm" \
+     -e REGISTRY_AUTH_HTPASSWD_PATH=/auth/htpasswd \
+     -e REGISTRY_HTTP_ADDR=0.0.0.0:5000 \
+     registry:2
+```
+
+* building the microservices and pushing to the registry
+```
+mvn clean install -f services/springboot/parent
+mvn clean install -f services/springboot/internal-shared
+mvn clean install -f services/springboot/internal-rest-http
+
+mvn clean package -f services/springboot/census
+mvn clean package -f services/springboot/census-zipcode
+mvn clean package -f services/springboot/census-demography
+
+mvn -Ddocker.registry=localhost:5000 -Ddocker.username=admin -Ddocker.password=admin -DdockerfileName=DockerfileIstio \
+    docker:build docker:push -f services/springboot/census/census-infrastructure
+
+mvn -Ddocker.registry=localhost:5000 -Ddocker.username=admin -Ddocker.password=admin -DdockerfileName=DockerfileIstio \
+    docker:build docker:push -f services/springboot/census-zipcode/census-zipcode-infrastructure
+
+mvn -Ddocker.registry=localhost:5000 -Ddocker.username=admin -Ddocker.password=admin -DdockerfileName=DockerfileIstio \
+    docker:build docker:push -f services/springboot/census-demography/census-demography-infrastructure
+```
+
+or execute the bash `buildDockerRegistry.sh` inside the directory `services/springboot`
+
+* starting the minikube
+
+```
+minikube start --memory=8192 --cpus=4 --vm-driver=hyperkit --kubernetes-version=v1.18.6 --disk-size=30GB --insecure-registry='0.0.0.0/0'
+minikube addons enable metrics-server
+minikube addons enable ingress
+```
+
+* installing the Istio
+
+```
+# Istio 1.6.5
+curl -L https://git.io/getLatestIstio | ISTIO_VERSION=1.6.5 sh -
+cd istio-1.6.5
+export PATH=$PWD/bin:$PATH
+
+# install
+istioctl profile list
+istioctl install --set profile=demo
+```
+
+* get information from istio
+
+```
+kubectl get pod -n istio-system
+kubectl get svc -n istio-system
+kubectl --namespace istio-system top pods --containers
+
+istioctl proxy-status
+
+echo "Istio Services: $(minikube ip):$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="http2")].nodePort}')"
+```
+
+* defining the user and password to interact with the Registry
+
+```
+kubectl create secret docker-registry service-registry --namespace=census --docker-server=$(ipconfig getifaddr en0):5000 \
+        --docker-username=admin --docker-password=admin
+```
+
+* deploying the sample
+
+```
+kubectl create -f kubernetes/plataform/namespace-census.json
+kubectl label namespace census istio-injection=enabled --overwrite
+
+kubectl create -f kubernetes/plataform/censuszipcode-service.yml
+kubectl create -f kubernetes/plataform/censuszipcode-deployment.yml
+
+kubectl create -f kubernetes/plataform/censusdemography-service.yml
+kubectl create -f kubernetes/plataform/censusdemography-deployment.yml
+
+kubectl create -f kubernetes/plataform/census-service.yml
+kubectl create -f kubernetes/plataform/census-deployment.yml
+
+kubectl create -f kubernetes/networking/census-gateway.yml
+```
+
+Once the gateway is running, you can call:
+
+```
+curl $(minikube ip):$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="http2")].nodePort}')/zipcode/37188
+curl $(minikube ip):$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="http2")].nodePort}')/demography/37188
+curl $(minikube ip):$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="http2")].nodePort}')/census/37188
 ```

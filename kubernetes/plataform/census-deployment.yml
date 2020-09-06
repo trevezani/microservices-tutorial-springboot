@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: census
+    version: v11
+  name: census-v1
+  namespace: census
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: census
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: census
+        version: v1
+      annotations:
+        sidecar.istio.io/inject: "true"
+    spec:
+      containers:
+      - name: census
+        image: 192.168.1.113:5000/census:0.0.1-SNAPSHOT
+        imagePullPolicy: Always
+        ports:
+          - containerPort: 8080
+            name: http
+            protocol: TCP
+          - containerPort: 8778
+            name: jolokia
+            protocol: TCP
+          - containerPort: 9779
+            name: prometheus
+            protocol: TCP
+        securityContext:
+          privileged: false
+      imagePullSecrets:
+        - name: service-registry

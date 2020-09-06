@@ -22,6 +22,7 @@
 		<logstash.version>6.4</logstash.version>
 		<spring-cloud-starter-consul-all.version>2.2.3.RELEASE</spring-cloud-starter-consul-all.version>
 		<consul-api.version>1.4.5</consul-api.version>
+		<dockerfileName>Dockerfile</dockerfileName>
 	</properties>
 
 	<dependencies>
