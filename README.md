@@ -616,3 +616,23 @@ curl $(minikube ip):$(kubectl -n istio-system get service istio-ingressgateway -
 curl $(minikube ip):$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="http2")].nodePort}')/demography/37188
 curl $(minikube ip):$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="http2")].nodePort}')/census/37188
 ```
+
+* Istio tools
+
+Jaeger
+
+```
+kubectl -n istio-system port-forward $(kubectl -n istio-system get pod -l app=jaeger -o jsonpath='{.items[0].metadata.name}') 15032:16686
+```
+
+Link: [http://127.0.0.1:15032/](http://127.0.0.1:15032/)
+
+
+
+Kiali
+
+```
+kubectl port-forward $(kubectl get pod -n istio-system -l app=kiali -o jsonpath='{.items[0].metadata.name}') -n istio-system 20001
+```
+
+Link: [http://127.0.0.1:20001/](http://127.0.0.1:20001/) -> admin:admin
